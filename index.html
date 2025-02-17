@@ -23,7 +23,7 @@
       font-family: 'Nunito', sans-serif;
       background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
       color: #333;
-      margin: 20px; /* a bit of breathing room */
+      margin: 10px; /* reduced margin for a narrower layout */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -36,7 +36,7 @@
       font-weight: 700;
     }
     
-    /* byline inserted right under the header */
+    /* byline right under the header */
     #byline {
       font-size: 18px;
       color: #555;
@@ -49,20 +49,20 @@
       margin-bottom: 10px;
     }
     
-    /* game board styling to fill up the screen */
+    /* game board styling */
     #game-board {
       width: 95vw;
-      max-width: 700px;
+      max-width: 600px;
       aspect-ratio: 1;
       display: grid;
       gap: 10px;
       margin-bottom: 20px;
     }
     
-    /* media query for smaller screens/phones */
+    /* for smaller screens/phones */
     @media (max-width: 600px) {
       #game-board {
-        max-width: 320px;
+        max-width: 300px;
       }
     }
     
@@ -71,7 +71,7 @@
       cursor: pointer;
       transition: transform 0.1s, box-shadow 0.2s;
       box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-      /* ensure cells remain square */
+      /* keep cells square */
       aspect-ratio: 1;
     }
     
@@ -85,7 +85,7 @@
       box-shadow: 0 0 12px rgba(255, 87, 34, 0.8);
     }
     
-    /* overlay base styles for when the game is paused or over */
+    /* overlay base styles */
     .overlay {
       position: fixed;
       top: 0;
@@ -108,8 +108,8 @@
     
     .overlay-content {
       background: #fff;
-      padding: 25px 35px;
-      border-radius: 10px;
+      padding: 20px 25px;
+      border-radius: 8px;
       text-align: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       max-width: 90%;
@@ -117,12 +117,12 @@
     
     .overlay-content h2 {
       margin-top: 0;
-      font-size: 28px;
+      font-size: 26px;
       color: #ff5722;
     }
     
     .overlay-content p {
-      font-size: 18px;
+      font-size: 16px;
       margin: 10px 0 20px;
     }
     
@@ -159,17 +159,18 @@
       background: #fb8c00;
     }
     
-    /* start menu styles */
+    /* start menu overlay styles */
     #start-menu .overlay-content {
-      max-width: 400px;
+      max-width: 350px; /* shorter menu */
+      padding: 15px 20px;
     }
     
-    /* make the logo fit in the overlay, not too big */
+    /* logo in start menu */
     #start-menu img {
       width: 80%;
       max-width: 300px;
       height: auto;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       border-radius: 8px;
     }
     
@@ -177,7 +178,7 @@
       display: flex;
       justify-content: center;
       gap: 10px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
       flex-wrap: wrap;
     }
     
@@ -197,25 +198,25 @@
       color: #fff;
     }
     
-    /* making the start game button bigger because tiny buttons bad */
+    /* larger Start Game button */
     #start-btn {
       background: #2196f3;
       color: #fff;
-      padding: 15px 30px;
-      font-size: 24px;
+      padding: 20px 40px;
+      font-size: 32px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       transition: background 0.2s;
-      margin: 5px;
+      margin: 10px 0;
     }
     
     #start-btn:hover {
       background: #1e88e5;
     }
     
-    /* style the how to play button to match the others */
-    #how-to-btn {
+    /* How to Play and Credits buttons */
+    #how-to-btn, #credits-btn {
       background: #2196f3;
       color: #fff;
       padding: 15px 30px;
@@ -224,15 +225,15 @@
       border-radius: 4px;
       cursor: pointer;
       transition: background 0.2s;
-      margin: 5px;
+      margin: 5px 0;
     }
     
-    #how-to-btn:hover {
+    #how-to-btn:hover, #credits-btn:hover {
       background: #1e88e5;
     }
     
-    /* style the back button to match the others */
-    #close-instructions-btn {
+    /* Back buttons */
+    #close-instructions-btn, #close-credits-btn {
       background: #2196f3;
       color: #fff;
       padding: 15px 30px;
@@ -244,7 +245,7 @@
       margin: 5px;
     }
     
-    #close-instructions-btn:hover {
+    #close-instructions-btn:hover, #close-credits-btn:hover {
       background: #1e88e5;
     }
     
@@ -252,7 +253,7 @@
     #preview-grid {
       width: 150px;
       height: 150px;
-      margin: 20px auto;
+      margin: 15px auto;
       display: grid;
       gap: 2px;
       border: 1px solid #ccc;
@@ -260,43 +261,12 @@
     }
     
     .preview-cell {
-      background: #ddd;
       border-radius: 2px;
     }
     
-    /* how to play animated example */
-    #animated-example {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 5px;
-      width: 150px;
-      margin: 0 auto 20px;
-    }
-    
-    .example-cell {
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-      background: #4caf50; /* base color */
-      position: relative;
-    }
-    
-    /* the odd cell in the example */
-    .example-cell.odd {
-      background: #66bb6a;
-      animation: pulse 1.5s infinite;
-    }
-    
-    @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.7);
-      }
-      70% {
-        box-shadow: 0 0 0 8px rgba(255, 87, 34, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(255, 87, 34, 0);
-      }
+    /* dancefloor mode for preview cells */
+    .dancefloor {
+      border: 5px solid black; /* thicker, rigid border */
     }
     
     /* fixed menu button */
@@ -313,11 +283,12 @@
       transition: background 0.2s;
       z-index: 20;
     }
+    
     #menu-btn:hover {
       background: #fb8c00;
     }
     
-    /* credits overlay styles (similar to instructions) */
+    /* credits overlay styles */
     .credits-overlay {
       position: fixed;
       top: 0;
@@ -342,7 +313,7 @@
       background: #fff;
       padding: 25px 35px;
       border-radius: 10px;
-      text-align: center;
+      text-align: left;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       max-width: 90%;
     }
@@ -353,34 +324,58 @@
       color: #ff5722;
     }
     
-    .credits-content p {
+    .credits-content ul {
+      list-style: disc inside;
       font-size: 18px;
       margin: 10px 0 20px;
+      padding-left: 0;
     }
     
-    /* style the back button for credits to match the others */
-    #close-credits-btn {
-      background: #2196f3;
-      color: #fff;
-      padding: 15px 30px;
-      font-size: 24px;
-      border: none;
+    .credits-content li {
+      margin-bottom: 5px;
+    }
+    
+    /* how to play overlay: instructions as a short list, with example animation container */
+    #animated-example {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      width: 150px;
+      min-height: 150px;
+      margin: 0 auto 20px;
+      border: 1px solid #ccc;
+      padding: 5px;
+    }
+    
+    .example-cell {
+      width: 40px;
+      height: 40px;
       border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.2s;
-      margin: 5px;
+      background: #4caf50; /* base color */
+      position: relative;
     }
     
-    #close-credits-btn:hover {
-      background: #1e88e5;
+    .example-cell.odd {
+      background: #66bb6a;
+      animation: pulse 1.5s infinite;
     }
     
-    /* footer is removed now since we are putting credits in overlay */
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 87, 34, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 8px rgba(255, 87, 34, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 87, 34, 0);
+      }
+    }
   </style>
 </head>
 <body>
   <h1>Odd Color Out</h1>
-  <!-- byline inserted right under the header -->
+  <!-- byline under header -->
   <div id="byline">made by Jeff Jefferson &lt;3</div>
   <div id="score">Score: 0</div>
   <div id="timer">Time Left: 5.00s</div>
@@ -409,7 +404,7 @@
       <!-- updated logo -->
       <img id="logo" src="https://cdn.discordapp.com/attachments/1209174724211511309/1340800927497719880/ctmzHQv.png?ex=67b3adab&amp;is=67b25c2b&amp;hm=120e88d583997bcfb5a7405cc401ef5f5d47803d5f54da62ec4f78bf4c1ab54d&amp;" alt="Logo" />
       <h2>Welcome to Odd Color Out!</h2>
-      <p>select your grid size:</p>
+      <p>Select your grid size:</p>
       <div id="grid-size-buttons">
         <button data-size="3">3 x 3</button>
         <button data-size="4" class="selected">4 x 4</button>
@@ -417,8 +412,16 @@
         <button data-size="6">6 x 6</button>
         <button data-size="7">7 x 7</button>
       </div>
-      <!-- preview of the selected grid size -->
+      <!-- preview grid -->
       <div id="preview-grid"></div>
+      <!-- dancefloor switch -->
+      <div style="margin-bottom:10px;">
+        <label class="switch">
+          <input type="checkbox" id="dancefloor-switch">
+          <span class="slider"></span>
+        </label>
+        <span id="dancefloor-label">Dancefloor: Off</span>
+      </div>
       <button id="start-btn">Start Game</button>
       <br />
       <button id="how-to-btn">How to Play</button>
@@ -431,13 +434,13 @@
   <div id="instructions-overlay" class="overlay hidden">
     <div class="overlay-content">
       <h2>How to Play</h2>
-      <p>
-        In Odd Color Out, one cell in the grid is a slightly different color.
-        Your goal is to quickly spot and tap the odd one out before time runs out!
-        Each correct selection increases your score, and the difference gets subtler.
-      </p>
+      <ul>
+        <li>Tap the cell that looks different,</li>
+        <li>Be quick, time is running out,</li>
+        <li>Your score increases with speed,</li>
+      </ul>
       <div id="animated-example">
-        <!-- a 3x3 animated example -->
+        <!-- a 3x3 animated example with one highlighted cell -->
         <div class="example-cell"></div>
         <div class="example-cell"></div>
         <div class="example-cell"></div>
@@ -456,12 +459,12 @@
   <div id="credits-overlay" class="credits-overlay hidden">
     <div class="credits-content">
       <h2>Credits</h2>
-      <p>
-        The logo font used is Macula Solid made by Jacques Le Bailly with the Adobe Fonts license.
-        I used Figma to create the logo.
-        Nunito is used for the UI.
-        All suggestions are welcome and can be emailed to <a href="mailto:jeffjefferson@duck.com">jeffjefferson@duck.com</a>!
-      </p>
+      <ul>
+        <li>Logo font, Macula Solid, made by Jacques Le Bailly (Adobe Fonts license),</li>
+        <li>Logo created using Figma,</li>
+        <li>UI uses Nunito,</li>
+        <li>Suggestions welcome, email: <a href="mailto:jeffjefferson@duck.com">jeffjefferson@duck.com</a>,</li>
+      </ul>
       <button id="close-credits-btn">Back</button>
     </div>
   </div>
@@ -480,6 +483,8 @@
     const menuBtnOverlay = document.getElementById('menu-btn-overlay');
     const creditsBtn = document.getElementById('credits-btn');
     const closeCreditsBtn = document.getElementById('close-credits-btn');
+    const dancefloorSwitch = document.getElementById('dancefloor-switch');
+    const dancefloorLabel = document.getElementById('dancefloor-label');
     
     let score = 0;
     let level = 1;
@@ -488,7 +493,9 @@
     let currentOddIndex = null;
     let timerAnimationFrame; // holds our requestAnimationFrame ID
     const timeLimit = 5000;  // 5000 ms = 5 seconds per round
-    let timeLeft = timeLimit; 
+    let timeLeft = timeLimit;
+    let dancefloorOn = false; // dancefloor mode off by default
+    let dancefloorInterval = null;
     
     // update selected grid size and preview
     gridSizeButtons.forEach(button => {
@@ -500,22 +507,55 @@
       });
     });
     
-    // generate preview grid so i can see what grid size i picked
+    // toggle dancefloor mode using switch
+    dancefloorSwitch.addEventListener('change', () => {
+      dancefloorOn = dancefloorSwitch.checked;
+      dancefloorLabel.textContent = dancefloorOn ? 'Dancefloor: On' : 'Dancefloor: Off';
+      updatePreview();
+    });
+    
+    // generate preview grid
     function updatePreview() {
+      // clear previous dancefloor interval if any
+      if (dancefloorInterval) {
+        clearInterval(dancefloorInterval);
+        dancefloorInterval = null;
+      }
       previewGrid.innerHTML = '';
       previewGrid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-      const diffFactor = 30;
-      const baseColor = randomRGB();
-      const baseColorString = rgbToString(baseColor);
-      const oddColor = adjustColor(baseColor, diffFactor);
-      const oddColorString = rgbToString(oddColor);
-      const oddIndex = Math.floor(Math.random() * (gridSize * gridSize));
-      for (let i = 0; i < gridSize * gridSize; i++) {
-        const cell = document.createElement('div');
-        cell.classList.add('preview-cell');
-        cell.style.backgroundColor = (i === oddIndex) ? oddColorString : baseColorString;
-        previewGrid.appendChild(cell);
+      if (dancefloorOn) {
+        for (let i = 0; i < gridSize * gridSize; i++) {
+          const cell = document.createElement('div');
+          cell.classList.add('preview-cell', 'dancefloor');
+          cell.style.backgroundColor = randomDanceColor();
+          previewGrid.appendChild(cell);
+        }
+        dancefloorInterval = setInterval(() => {
+          const cells = previewGrid.querySelectorAll('.preview-cell');
+          cells.forEach(cell => {
+            cell.style.backgroundColor = randomDanceColor();
+          });
+        }, 1000);
+      } else {
+        const diffFactor = 30;
+        const baseColor = randomRGB();
+        const baseColorString = rgbToString(baseColor);
+        const oddColor = adjustColor(baseColor, diffFactor);
+        const oddColorString = rgbToString(oddColor);
+        const oddIndex = Math.floor(Math.random() * (gridSize * gridSize));
+        for (let i = 0; i < gridSize * gridSize; i++) {
+          const cell = document.createElement('div');
+          cell.classList.add('preview-cell');
+          cell.style.backgroundColor = (i === oddIndex) ? oddColorString : baseColorString;
+          previewGrid.appendChild(cell);
+        }
       }
+    }
+    
+    // return a random bright color for dancefloor mode
+    function randomDanceColor() {
+      const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#33FFF6'];
+      return colors[Math.floor(Math.random() * colors.length)];
     }
     
     // random rgb function
@@ -526,7 +566,7 @@
       return { r, g, b };
     }
     
-    // convert our rgb object to a css string so css doesnt shit itself
+    // convert rgb object to css string
     function rgbToString({ r, g, b }) {
       return `rgb(${r}, ${g}, ${b})`;
     }
@@ -537,12 +577,12 @@
       return { r: adjust(r), g: adjust(g), b: adjust(b) };
     }
     
-    // update the timer display with decimals
+    // update timer display
     function updateTimerDisplay() {
       timerDisplay.textContent = `Time Left: ${(timeLeft / 1000).toFixed(2)}s`;
     }
     
-    // start the countdown timer using requestAnimationFrame
+    // start timer using requestAnimationFrame
     function startTimer() {
       const startTime = performance.now();
       const endTime = startTime + timeLimit;
@@ -559,12 +599,12 @@
       timerAnimationFrame = requestAnimationFrame(updateTimer);
     }
     
-    // create or refresh the game board for a new round
+    // create game board for new round
     function createBoard() {
       board.innerHTML = '';
       gameActive = true;
       board.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-      // modified color difference calculation: decrease more slowly for longer subtlety
+      // modified color difference: decrease more slowly for longer subtlety
       let diffFactor = Math.max(50 - level * 1, 5);
       const baseColor = randomRGB();
       const baseColorString = rgbToString(baseColor);
@@ -610,7 +650,7 @@
       gameOverOverlay.classList.remove('hidden');
     }
     
-    // restart the game
+    // restart game
     function restartGame() {
       score = 0;
       level = 1;
@@ -619,9 +659,9 @@
       createBoard();
     }
     
-    // share game result with link i will have one day
+    // share game result
     function shareGame() {
-      const shareText = `I scored ${score} points in Odd Color Out! Try it out: http://examplelinkishouldupdatesoon.com`;
+      const shareText = `I scored ${score} points in Odd Color Out! Try it out: http://jeffjeffersont.github.io`;
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(shareText).then(() => {
           document.getElementById('share-btn').textContent = 'Copied!';
@@ -650,7 +690,7 @@
       }
     }
     
-    // start game from the start menu
+    // start game from start menu
     function startGame() {
       startMenu.classList.add('hidden');
       score = 0;
@@ -659,27 +699,27 @@
       createBoard();
     }
     
-    // show the how to play overlay
+    // show how to play overlay
     function showInstructions() {
       instructionsOverlay.classList.remove('hidden');
     }
     
-    // hide the how to play overlay
+    // hide how to play overlay
     function hideInstructions() {
       instructionsOverlay.classList.add('hidden');
     }
     
-    // show the credits overlay
+    // show credits overlay
     function showCredits() {
       creditsOverlay.classList.remove('hidden');
     }
     
-    // hide the credits overlay
+    // hide credits overlay
     function hideCredits() {
       creditsOverlay.classList.add('hidden');
     }
     
-    // go back to the main menu
+    // go back to main menu
     function goToMenu() {
       board.innerHTML = '';
       score = 0;
