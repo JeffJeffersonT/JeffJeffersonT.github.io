@@ -4,23 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Odd Color Out!</title>
-  <!-- Google AdSense snippet -->
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4471781874805031"
-     crossorigin="anonymous"></script>
   <!-- chill, friendly font (nunito) -->
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
   <!-- favicon set to the logo image -->
   <link rel="icon" type="image/png" href="https://github.com/JeffJeffersonT/JeffJeffersonT.github.io/blob/main/OddColorOutLogo.png?raw=true" />
   <style>
-    /* Basic resets */
+    /* basic resets */
+    * {
+      box-sizing: border-box;
+    }
     html, body {
       width: 100vw;
       height: 100vh;
       margin: 0;
       padding: 0;
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
-    /* Global layout */
+    /* global layout */
     body {
       font-family: 'Nunito', sans-serif;
       background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
@@ -33,7 +34,7 @@
       position: relative;
       transition: background 0.3s, color 0.3s;
     }
-    /* Overlay text and start menu text centered */
+    /* overlay text and start menu text centered */
     .overlay-content,
     #start-menu .overlay-content h2,
     #start-menu .overlay-content p {
@@ -44,6 +45,14 @@
       margin-bottom: 5px;
       font-weight: 700;
       text-align: center;
+    }
+    /* version text under main header */
+    h1 + small {
+      font-size: 12px;
+      color: #888;
+      display: block;
+      text-align: center;
+      margin-bottom: 10px;
     }
     #byline {
       font-size: 18px;
@@ -56,20 +65,20 @@
       font-size: 22px;
       margin-bottom: 10px;
     }
-    /* Hourglass icon */
+    /* hourglass icon */
     #hourglass {
       display: inline-block;
       margin-left: 10px;
-      animation: flipHourglass 1s infinite;
+      animation: fliphourglass 1s infinite;
     }
-    @keyframes flipHourglass {
+    @keyframes fliphourglass {
       0% { transform: rotate(0deg); }
       50% { transform: rotate(180deg); }
       100% { transform: rotate(360deg); }
     }
-    /* Timer bar */
+    /* timer bar */
     #timer-bar-container {
-      width: 95vw;
+      width: calc(100vw - 40px);
       max-width: 600px;
       height: 10px;
       background-color: #ddd;
@@ -83,18 +92,18 @@
       border-radius: 5px;
       transition: width 0.1s linear;
     }
-    /* Game board */
+    /* game board - slightly smaller with higher bottom margin */
     #game-board {
-      width: 95vw;
-      max-width: 500px;
+      width: calc(100vw - 40px);
+      max-width: 450px;
       aspect-ratio: 1;
       display: grid;
       gap: 10px;
-      margin-bottom: 20px;
+      margin: 20px auto 40px;
     }
     @media (max-width: 600px) {
       #game-board, #timer-bar-container {
-        max-width: 250px;
+        max-width: calc(100vw - 40px);
       }
     }
     .cell {
@@ -111,7 +120,7 @@
       border: 4px solid #ff5722;
       box-shadow: 0 0 12px rgba(255,87,34,0.8);
     }
-    /* Overlay styles */
+    /* overlay styles */
     .overlay {
       position: fixed;
       top: 0;
@@ -135,7 +144,11 @@
       padding: 15px 20px;
       border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      max-width: 90%;
+      margin: 20px;
+      width: calc(100% - 40px);
+      max-width: 400px;
+      max-height: calc(100vh - 40px);
+      overflow-y: auto;
     }
     .overlay-content h2 {
       margin-top: 0;
@@ -155,7 +168,7 @@
       cursor: pointer;
       transition: background 0.2s;
     }
-    /* Unified menu button style */
+    /* unified menu button style */
     .menu-button {
       background: #2196f3;
       color: #fff;
@@ -169,20 +182,19 @@
     .menu-button:hover {
       background: #1e88e5;
     }
-    /* Start menu overlay */
+    /* start menu overlay - scalable with margins */
     #start-menu .overlay-content {
-      max-width: 350px;
-      padding: 15px 20px;
+      /* inherited from .overlay-content */
     }
     #start-menu img {
       display: block;
       margin: 0 auto 15px auto;
-      width: 80%;
-      max-width: 300px;
+      width: 70%;
+      max-width: 280px;
       height: auto;
       border-radius: 8px;
     }
-    /* Donation link styling */
+    /* donation link styling */
     #donate-link {
       font-size: 16px;
       margin: 10px 0;
@@ -194,7 +206,7 @@
     #donate-link a:hover {
       text-decoration: underline;
     }
-    /* Grid size buttons */
+    /* grid size buttons */
     #grid-size-buttons {
       display: flex;
       justify-content: center;
@@ -222,7 +234,7 @@
       gap: 10px;
       margin-bottom: 15px;
     }
-    /* Preview grid */
+    /* preview grid */
     #preview-grid {
       width: 150px;
       height: 150px;
@@ -238,7 +250,7 @@
     .dancefloor {
       border: 5px solid black;
     }
-    /* Fixed menu button (top right) */
+    /* fixed menu button (top right) */
     #menu-btn {
       position: fixed;
       top: 10px;
@@ -255,7 +267,7 @@
     #menu-btn:hover {
       background: #fb8c00;
     }
-    /* How to Play overlay */
+    /* how to play overlay */
     #animated-example {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -282,7 +294,7 @@
       70% { box-shadow: 0 0 0 8px rgba(255,87,34,0); }
       100% { box-shadow: 0 0 0 0 rgba(255,87,34,0); }
     }
-    /* Switch styling for Dancefloor mode */
+    /* switch styling for dancefloor mode */
     .switch {
       position: relative;
       display: inline-block;
@@ -325,13 +337,13 @@
     input:checked + .slider:before {
       transform: translateX(26px);
     }
-    /* Numpad info text */
+    /* numpad info text */
     #numpad-info {
       font-size: 12px;
       color: #888;
       margin-top: 5px;
     }
-    /* Big Start Game button styling */
+    /* big start game button styling */
     #start-btn {
       font-size: 28px;
       padding: 20px 40px;
@@ -342,10 +354,11 @@
   </style>
 </head>
 <body>
-  <!-- Audio element for correct cell clicks (src will be set dynamically) -->
+  <!-- audio element for correct cell clicks (src will be set dynamically) -->
   <audio id="correct-sound" preload="auto"></audio>
 
   <h1>Odd Color Out</h1>
+  <small>v0.4</small>
   <div id="byline">made by Jeff Jefferson &lt;3</div>
   <div id="score">Score: 0</div>
   <div id="timer">Time Left: 5.00s</div>
@@ -353,13 +366,13 @@
   <div id="timer-bar-container">
     <div id="timer-bar"></div>
   </div>
-  <!-- Fixed menu button -->
+  <!-- fixed menu button -->
   <button id="menu-btn" class="menu-button">Menu</button>
   <div id="game-board"></div>
-  <!-- Game over overlay -->
+  <!-- game over overlay -->
   <div id="game-over-overlay" class="overlay hidden">
     <div class="overlay-content">
-      <h2>Game Over!</h2>
+      <h2>game over!</h2>
       <p id="final-score">Your Score: 0</p>
       <div class="overlay-buttons">
         <button id="restart-btn" class="menu-button">Restart</button>
@@ -368,16 +381,16 @@
       </div>
     </div>
   </div>
-  <!-- Start menu overlay -->
+  <!-- start menu overlay -->
   <div id="start-menu" class="overlay">
     <div class="overlay-content">
-      <img id="logo" src="https://github.com/JeffJeffersonT/JeffJeffersonT.github.io/blob/main/OddColorOutLogo.png?raw=true" alt="Logo" />
-      <h2>Welcome to Odd Color Out!</h2>
-      <!-- Donation link in the start menu -->
+      <img id="logo" src="https://github.com/JeffJeffersonT/JeffJeffersonT.github.io/blob/main/OddColorOutLogo.png?raw=true" alt="logo" />
+      <h2>welcome to odd color out!</h2>
+      <!-- donation link in the start menu -->
       <div id="donate-link">
         <a href="https://ko-fi.com/jeffjefferson" target="_blank">like this game? consider donating!</a>
       </div>
-      <p>Select your grid size:</p>
+      <p>select your grid size:</p>
       <div id="grid-size-buttons">
         <button data-size="3">3 x 3</button>
         <button data-size="4" class="selected">4 x 4</button>
@@ -386,19 +399,23 @@
         <button data-size="7">7 x 7</button>
       </div>
       <div id="numpad-info"></div>
-      <!-- Preview grid -->
+      <!-- preview grid -->
       <div id="preview-grid"></div>
-      <!-- Dancefloor switch container -->
+      <!-- dancefloor switch container -->
       <div style="margin-bottom:10px; text-align: center;">
         <label class="switch">
           <input type="checkbox" id="dancefloor-switch">
           <span class="slider"></span>
         </label>
-        <span id="dancefloor-label">Dancefloor: Off</span>
+        <span id="dancefloor-label">dancefloor: off</span>
       </div>
-      <!-- Big Start Game button -->
+      <!-- big start game button -->
       <button id="start-btn" class="menu-button">START GAME</button>
-      <!-- Other menu buttons -->
+      <!-- if the game doesnt fit your screen, click here text -->
+      <p id="screen-fit-text" style="cursor: pointer; text-decoration: underline; color: #2196f3; text-align: center; margin-top: 10px;">
+        if the game doesnt fit your screen, click here
+      </p>
+      <!-- other menu buttons -->
       <div id="menu-buttons-grid">
         <button id="how-to-btn" class="menu-button">HOW TO PLAY</button>
         <button id="options-btn" class="menu-button">OPTIONS</button>
@@ -407,15 +424,15 @@
       </div>
     </div>
   </div>
-  <!-- Instructions overlay -->
+  <!-- instructions overlay -->
   <div id="instructions-overlay" class="overlay hidden">
     <div class="overlay-content">
-      <h2>How to Play</h2>
+      <h2>how to play</h2>
       <ul>
-        <li>Tap the cell that looks different</li>
-        <li>Be quick, time is running out!</li>
-        <li>Your score increases with speed</li>
-        <li>Increase brightness and disable night shift</li>
+        <li>tap the cell that looks different</li>
+        <li>be quick, time is running out!</li>
+        <li>your score increases with speed</li>
+        <li>increase brightness and disable night shift</li>
       </ul>
       <div id="animated-example">
         <div class="example-cell"></div>
@@ -428,65 +445,75 @@
         <div class="example-cell"></div>
         <div class="example-cell"></div>
       </div>
-      <button id="close-instructions-btn" class="menu-button">Back</button>
+      <button id="close-instructions-btn" class="menu-button">back</button>
     </div>
   </div>
-  <!-- Credits overlay -->
+  <!-- credits overlay -->
   <div id="credits-overlay" class="overlay hidden">
     <div class="overlay-content">
-      <h2>Credits</h2>
+      <h2>credits</h2>
       <ul>
-        <li>Logo font, Macula Solid, made by Jacques Le Bailly (Adobe Fonts license)</li>
-        <li>Logo created using Figma</li>
-        <li>UI uses Nunito</li>
-        <li>Suggestions welcome, email: <a href="mailto:jeffjefferson@duck.com">jeffjefferson@duck.com</a></li>
-        <li>Sounds are from SoundJay</li>
+        <li>logo font, macula solid, made by jacques le bailly (adobe fonts license)</li>
+        <li>logo created using figma</li>
+        <li>ui uses nunito</li>
+        <li>suggestions welcome, email: <a href="mailto:jeffjefferson@duck.com">jeffjefferson@duck.com</a></li>
+        <li>sounds are from soundjay</li>
       </ul>
-      <button id="close-credits-btn" class="menu-button">Back</button>
+      <button id="close-credits-btn" class="menu-button">back</button>
     </div>
   </div>
-  <!-- Options overlay -->
+  <!-- options overlay -->
   <div id="options-overlay" class="overlay hidden">
     <div class="overlay-content">
-      <h2>Options</h2>
-      <p>Select a mode:</p>
+      <h2>options</h2>
+      <p>select a mode:</p>
       <form id="options-form">
         <label>
           <input type="radio" name="mode" value="normal" checked>
-          Normal Mode
+          normal mode
         </label>
         <br />
         <label>
           <input type="radio" name="mode" value="grayscale">
-          Grayscale Mode
+          grayscale mode
         </label>
         <br />
         <label>
           <input type="radio" name="mode" value="colorblind">
-          Colorblind Mode
+          colorblind mode
         </label>
       </form>
-      <p>Custom Grid Size (3-10):</p>
-      <input type="number" id="custom-grid-size" min="3" max="10" placeholder="Leave blank" style="width:50px;" />
-      <p>Select Theme:</p>
+      <p>custom grid size (3-10):</p>
+      <input type="number" id="custom-grid-size" min="3" max="10" placeholder="leave blank" style="width:50px;" />
+      <small style="display:block; font-size:12px; color:#888;">to reset the custom size, just reopen the options</small>
+      <p>select theme:</p>
       <div id="theme-buttons" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;">
-        <button id="theme-light" class="menu-button selected">Light Theme</button>
-        <button id="theme-dark" class="menu-button">Dark Theme</button>
+        <button id="theme-light" class="menu-button selected">light theme</button>
+        <button id="theme-dark" class="menu-button">dark theme</button>
       </div>
       <br />
-      <button id="close-options-btn" class="menu-button">Back</button>
+      <button id="close-options-btn" class="menu-button">back</button>
     </div>
   </div>
-  <!-- Leaderboard overlay -->
+  <!-- leaderboard overlay -->
   <div id="leaderboard-overlay" class="overlay hidden">
     <div class="overlay-content">
-      <h2>Leaderboard</h2>
+      <h2>leaderboard</h2>
       <ul id="leaderboard-list"></ul>
-      <button id="close-leaderboard-btn" class="menu-button">Back</button>
+      <button id="close-leaderboard-btn" class="menu-button">back</button>
+    </div>
+  </div>
+  <!-- screen fit help overlay -->
+  <div id="screen-fit-overlay" class="overlay hidden">
+    <div class="overlay-content">
+      <h2>screen help</h2>
+      <p>for desktop, use ctrl + and - to resize the page</p>
+      <p>for mobile, use 'use desktop site' or 'desktop mode' in safari, chrome, or firefox</p>
+      <button id="close-screen-fit-btn" class="menu-button">back</button>
     </div>
   </div>
   <script>
-    // Global state and helper variables
+    // global state and helper variables
     const board = document.getElementById('game-board');
     const scoreDisplay = document.getElementById('score');
     const timerDisplay = document.getElementById('timer');
@@ -517,7 +544,12 @@
     const leaderboardList = document.getElementById('leaderboard-list');
     const numpadInfo = document.getElementById('numpad-info');
     
-    // Define an array of phone sound URLs for correct cell clicks
+    // global variables for share info
+    let lastBaseColor = "";
+    let lastOddColor = "";
+    let lastDiff = 0;
+    
+    // define an array of phone sound urls for correct cell clicks
     const correctSoundUrls = [
       "https://www.soundjay.com/phone/sounds/cell-phone-1-nr1.mp3",
       "https://www.soundjay.com/phone/sounds/cell-phone-1-nr2.mp3",
@@ -530,7 +562,7 @@
       "https://www.soundjay.com/phone/sounds/cell-phone-1-nr9.mp3"
     ];
     
-    // Audio element for correct cell clicks
+    // audio element for correct cell clicks
     const correctSound = document.getElementById('correct-sound');
     correctSound.volume = 0.2;
     
@@ -549,7 +581,7 @@
     let currentTheme = "light"; // "light" or "dark"
     let currentTimeLimit = baseTimeLimit;
     
-    // Define numpad mapping and flag for single key processing
+    // define numpad mapping and flag for single key processing
     const numpadMapping = {
       "Numpad7": 0,
       "Numpad8": 1,
@@ -563,25 +595,61 @@
     };
     let numpadKeyDown = false;
     
-    // Grid size button events
+    // function to get an emoji representing an rgb color
+    function getEmojiForColor(colorStr) {
+      // expect colorStr format: "rgb(r, g, b)"
+      const nums = colorStr.match(/\d+/g);
+      if (!nums || nums.length < 3) return "⬜";
+      const r = parseInt(nums[0]);
+      const g = parseInt(nums[1]);
+      const b = parseInt(nums[2]);
+      const brightness = (r + g + b) / 3;
+      if (brightness < 50) return "⬛";
+      if (brightness > 230) return "⬜";
+      // if red and blue are high and green is low, choose purple
+      if (r > 150 && b > 150 && g < 100) return "🟪";
+      if (r >= g && r >= b) {
+        if (Math.abs(r - g) < 20 && r > 150) return "🟨";
+        return "🟥";
+      }
+      if (g >= r && g >= b) {
+        return "🟩";
+      }
+      if (b >= r && b >= g) {
+        return "🟦";
+      }
+      return "⬜";
+    }
+    
+    // function to get a qualitative description for shade difference
+    function getShadeDescription(diff) {
+      if (diff >= 45) return "very low";
+      else if (diff >= 40) return "low";
+      else if (diff >= 35) return "moderate";
+      else if (diff >= 30) return "average";
+      else if (diff === 25) return "impossible";
+      else return diff;
+    }
+    
+    // grid size button events
     gridSizeButtons.forEach(button => {
       button.addEventListener('click', () => {
         gridSizeButtons.forEach(btn => btn.classList.remove('selected'));
         button.classList.add('selected');
         gridSize = parseInt(button.dataset.size, 10);
         updatePreview();
-        numpadInfo.textContent = (gridSize === 3) ? "Playable with numpad" : "";
+        numpadInfo.textContent = (gridSize === 3) ? "playable with numpad" : "";
       });
     });
     
-    // Toggle dancefloor mode
+    // toggle dancefloor mode
     dancefloorSwitch.addEventListener('change', () => {
       dancefloorOn = dancefloorSwitch.checked;
-      dancefloorLabel.textContent = dancefloorOn ? 'Dancefloor: On' : 'Dancefloor: Off';
+      dancefloorLabel.textContent = dancefloorOn ? 'dancefloor: on' : 'dancefloor: off';
       updatePreview();
     });
     
-    // Theme button events
+    // theme button events
     themeLightBtn.addEventListener('click', () => {
       currentTheme = "light";
       themeLightBtn.classList.add('selected');
@@ -597,7 +665,7 @@
       document.body.style.color = "#eee";
     });
     
-    // Generate preview grid
+    // generate preview grid
     function updatePreview() {
       if (dancefloorInterval) {
         clearInterval(dancefloorInterval);
@@ -649,7 +717,7 @@
           }
         } else {
           let diffFactor = Math.max(50 - level, 25);
-          if(score >= 3000) diffFactor = 25;
+          if (score >= 3000) diffFactor = 25;
           if (Math.random() < 0.2) { 
             diffFactor = Math.floor(Math.random() * (50 - 30 + 1)) + 30;
           }
@@ -718,16 +786,16 @@
       timerBar.style.width = (timeLeft / currentTimeLimit * 100) + '%';
     }
     
-    // Timer thresholds:
-    // Score <3000: 5s; 3000<=score<6000: 4s; 6000<=score<12000: 3s; 12000<=score<25000: 2s; score>=25000: 1s.
+    // timer thresholds:
+    // score <3000: 5s; 3000<=score<6000: 4s; 6000<=score<12000: 3s; 12000<=score<25000: 2s; score>=25000: 1s.
     function startTimer() {
-      if(score >= 25000) {
+      if (score >= 25000) {
         currentTimeLimit = 1000;
-      } else if(score >= 12000) {
+      } else if (score >= 12000) {
         currentTimeLimit = 2000;
-      } else if(score >= 6000) {
+      } else if (score >= 6000) {
         currentTimeLimit = 3000;
-      } else if(score >= 3000) {
+      } else if (score >= 3000) {
         currentTimeLimit = 4000;
       } else {
         currentTimeLimit = baseTimeLimit;
@@ -752,17 +820,13 @@
       gameActive = true;
       board.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
       roundsPlayed++;
-      let diffFactor = Math.max(50 - level, 25);
-      if(score >= 3000) diffFactor = 25;
-      if (Math.random() < 0.2) { 
-        diffFactor = Math.floor(Math.random() * (50 - 30 + 1)) + 30;
-      }
       let baseColorString, oddColorString;
       if (gameMode === "grayscale") {
         let gray = randomGray();
         let oddGray = adjustGray(gray, 30);
         baseColorString = `rgb(${gray}, ${gray}, ${gray})`;
         oddColorString = `rgb(${oddGray}, ${oddGray}, ${oddGray})`;
+        lastDiff = 30;
       } else if (gameMode === "colorblind") {
         const palette = colorblindPalette();
         const baseColor = palette[Math.floor(Math.random() * palette.length)];
@@ -770,12 +834,23 @@
         const baseRgb = hexToRgb(baseColor);
         const oddRgb = adjustColor(baseRgb, 30);
         oddColorString = rgbToString(oddRgb);
+        lastDiff = 30;
       } else {
+        let diffFactor = Math.max(50 - level, 25);
+        if (score >= 3000) diffFactor = 25;
+        if (Math.random() < 0.2) { 
+          diffFactor = Math.floor(Math.random() * (50 - 30 + 1)) + 30;
+        }
         const baseColor = randomRGB();
         baseColorString = rgbToString(baseColor);
         const oddColor = adjustColor(baseColor, diffFactor);
         oddColorString = rgbToString(oddColor);
+        lastDiff = diffFactor;
       }
+      // store last used colors for sharing
+      lastBaseColor = baseColorString;
+      lastOddColor = oddColorString;
+      
       let oddIndex = Math.floor(Math.random() * (gridSize * gridSize));
       currentOddIndex = oddIndex;
       for (let i = 0; i < gridSize * gridSize; i++) {
@@ -829,18 +904,28 @@
     }
     
     function shareGame() {
-      const modeText = (gameMode !== "normal") ? ` (Mode: ${gameMode.charAt(0).toUpperCase() + gameMode.slice(1)})` : "";
-      const shareText = `I scored ${score} points in Odd Color Out (Grid Size: ${gridSize} x ${gridSize}${modeText})! Try it out: http://jeffjeffersont.github.io`;
+      // build an emoji grid mosaic based on the last played grid colors
+      const baseEmoji = getEmojiForColor(lastBaseColor);
+      const oddEmoji = getEmojiForColor(lastOddColor);
       let mosaic = "";
-      for (let i = 0; i < gridSize; i++){
-        for (let j = 0; j < gridSize; j++){
-          mosaic += "⬜";
+      for (let i = 0; i < gridSize; i++) {
+        for (let j = 0; j < gridSize; j++) {
+          let index = i * gridSize + j;
+          mosaic += (index === currentOddIndex ? oddEmoji : baseEmoji);
         }
         mosaic += "\n";
       }
-      const fullShareText = shareText + "\n" + mosaic;
+      const modeText = gameMode.charAt(0).toUpperCase() + gameMode.slice(1);
+      const shadeDesc = getShadeDescription(lastDiff);
+      const shareText = `I scored ${score} points in Odd Color Out!
+Mode: ${modeText}
+Grid Size: ${gridSize} x ${gridSize}
+Shade difference: ${shadeDesc}
+Grid:
+${mosaic}Try it out at: http://jeffjeffersont.github.io`;
+      
       if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(fullShareText).then(() => {
+        navigator.clipboard.writeText(shareText).then(() => {
           document.getElementById('share-btn').textContent = 'Copied!';
           setTimeout(() => {
             document.getElementById('share-btn').textContent = 'Share';
@@ -848,7 +933,7 @@
         });
       } else {
         const textArea = document.createElement("textarea");
-        textArea.value = fullShareText;
+        textArea.value = shareText;
         textArea.style.position = "fixed";
         textArea.style.top = "-9999px";
         document.body.appendChild(textArea);
@@ -861,7 +946,7 @@
             document.getElementById('share-btn').textContent = 'Share';
           }, 2000);
         } catch (err) {
-          console.error('Failed to copy:', err);
+          console.error('failed to copy:', err);
         }
         document.body.removeChild(textArea);
       }
@@ -902,7 +987,7 @@
       updatePreview();
     }
     
-    // Numpad event listeners for 3x3 grid
+    // numpad event listeners for 3x3 grid
     document.addEventListener('keydown', (e) => {
       if (gameActive && gridSize === 3 && !numpadKeyDown) {
         if(numpadMapping[e.code] !== undefined) {
@@ -919,7 +1004,7 @@
       }
     });
     
-    // Event listeners for overlays and buttons
+    // event listeners for overlays and buttons
     startBtn.addEventListener('click', startGame);
     document.getElementById('restart-btn').addEventListener('click', restartGame);
     document.getElementById('share-btn').addEventListener('click', shareGame);
@@ -929,7 +1014,7 @@
       const radios = document.getElementsByName('mode');
       radios.forEach(radio => { radio.checked = (radio.value === gameMode); });
       customGridSizeInput.value = "";
-      if(currentTheme === "dark") {
+      if (currentTheme === "dark") {
         themeDarkBtn.classList.add('selected');
         themeLightBtn.classList.remove('selected');
       } else {
@@ -956,6 +1041,18 @@
     menuBtn.addEventListener('click', goToMenu);
     document.getElementById('menu-btn-overlay').addEventListener('click', goToMenu);
     
+    // screen fit help overlay event listeners
+    const screenFitText = document.getElementById('screen-fit-text');
+    const screenFitOverlay = document.getElementById('screen-fit-overlay');
+    const closeScreenFitBtn = document.getElementById('close-screen-fit-btn');
+    
+    screenFitText.addEventListener('click', () => {
+      screenFitOverlay.classList.remove('hidden');
+    });
+    closeScreenFitBtn.addEventListener('click', () => {
+      screenFitOverlay.classList.add('hidden');
+    });
+    
     function goToMenu() {
       board.innerHTML = '';
       score = 0;
@@ -968,7 +1065,7 @@
       updatePreview();
     }
     
-    // Initialize preview on page load
+    // initialize preview on page load
     updatePreview();
   </script>
 </body>
