@@ -10,16 +10,11 @@
   <link rel="icon" type="image/png" href="https://github.com/JeffJeffersonT/JeffJeffersonT.github.io/blob/main/OddColorOutLogo.png?raw=true" />
   <style>
     /* basic resets */
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
     html, body {
-      width: 100vw;
-      height: 100vh;
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-      overflow-y: auto;
+      width: 100vw; height: 100vh;
+      margin: 0; padding: 0;
+      overflow-x: hidden; overflow-y: auto;
     }
     /* global layout */
     body {
@@ -34,260 +29,147 @@
       position: relative;
       transition: background 0.3s, color 0.3s;
     }
-    /* overlay text and start menu text centered */
+    /* overlay text and menus */
     .overlay-content,
     #start-menu .overlay-content h2,
     #start-menu .overlay-content p {
-      text-align: center;
-      color: #333 !important;
+      text-align: center; color: #333 !important;
     }
-    h1 {
-      margin-bottom: 5px;
-      font-weight: 700;
-      text-align: center;
-    }
-    /* version text under main header */
-    h1 + small {
-      font-size: 12px;
-      color: #888;
-      display: block;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    #byline {
-      font-size: 18px;
-      color: #555;
-      margin-bottom: 2px;
-      font-style: italic;
-      text-align: center;
-    }
-    #score, #timer {
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
+    h1 { margin-bottom: 5px; font-weight: 700; text-align: center; }
+    h1 + small { font-size: 12px; color: #888; display: block; text-align: center; margin-bottom: 10px; }
+    #byline { font-size: 18px; color: #555; margin-bottom: 2px; font-style: italic; text-align: center; }
+    #score, #timer { font-size: 22px; margin-bottom: 10px; }
+    /* animated countdown timer */
+    @keyframes pulseTimer { 0% { color: #fff; } 50% { color: #ff0000; } 100% { color: #fff; } }
+    .timer-warning { animation: pulseTimer 1s infinite; }
     /* hourglass icon */
-    #hourglass {
-      display: inline-block;
-      margin-left: 10px;
-      animation: fliphourglass 1s infinite;
-    }
-    @keyframes fliphourglass {
-      0% { transform: rotate(0deg); }
-      50% { transform: rotate(180deg); }
-      100% { transform: rotate(360deg); }
-    }
+    #hourglass { display: inline-block; margin-left: 10px; animation: fliphourglass 1s infinite; }
+    @keyframes fliphourglass { 0% { transform: rotate(0deg); } 50% { transform: rotate(180deg); } 100% { transform: rotate(360deg); } }
     /* timer bar */
     #timer-bar-container {
-      width: calc(100vw - 40px);
-      max-width: 600px;
-      height: 10px;
-      background-color: #ddd;
-      border-radius: 5px;
-      margin-bottom: 10px;
+      width: calc(100vw - 40px); max-width: 600px;
+      height: 10px; background-color: #ddd;
+      border-radius: 5px; margin-bottom: 10px;
     }
     #timer-bar {
-      width: 100%;
-      height: 100%;
-      background-color: #2196f3;
-      border-radius: 5px;
+      width: 100%; height: 100%;
+      background-color: #2196f3; border-radius: 5px;
       transition: width 0.1s linear;
     }
-    /* game board - slightly smaller with higher bottom margin */
+    /* game board */
     #game-board {
-      width: calc(100vw - 40px);
-      max-width: 450px;
-      aspect-ratio: 1;
-      display: grid;
-      gap: 10px;
+      width: calc(100vw - 40px); max-width: 450px;
+      aspect-ratio: 1; display: grid; gap: 10px;
       margin: 20px auto 40px;
     }
     @media (max-width: 600px) {
-      #game-board, #timer-bar-container {
-        max-width: calc(100vw - 40px);
-      }
+      #game-board, #timer-bar-container { max-width: calc(100vw - 40px); }
     }
     .cell {
-      border-radius: 8px;
-      cursor: pointer;
+      border-radius: 8px; cursor: pointer;
       transition: transform 0.1s, box-shadow 0.2s;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-      aspect-ratio: 1;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15); aspect-ratio: 1;
     }
-    .cell:active {
-      transform: scale(0.95);
-    }
+    .cell:active { transform: scale(0.95); }
     .correct-highlight {
       border: 4px solid #ff5722;
       box-shadow: 0 0 12px rgba(255,87,34,0.8);
     }
+    /* shake animation for wrong taps */
+    @keyframes shake {
+      0% { transform: translateX(0px); }
+      20% { transform: translateX(-5px); }
+      40% { transform: translateX(5px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+      100% { transform: translateX(0px); }
+    }
+    .shake { animation: shake 0.5s; }
+    /* particle effect */
+    .particle {
+      position: absolute; width: 5px; height: 5px;
+      background: #ff5722; border-radius: 50%;
+      pointer-events: none; opacity: 1;
+      animation: particle-fade 1s forwards;
+    }
+    @keyframes particle-fade {
+      to { transform: translate(var(--dx), var(--dy)); opacity: 0; }
+    }
+    /* game over fade out */
+    .fade-out { animation: fadeOut 0.5s forwards; }
+    @keyframes fadeOut {
+      to { opacity: 0; transform: scale(0.9); }
+    }
     /* overlay styles */
     .overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      opacity: 1;
-      transition: opacity 0.3s ease;
-      z-index: 10;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5); display: flex;
+      justify-content: center; align-items: center;
+      opacity: 1; transition: opacity 0.3s ease; z-index: 10;
     }
-    .overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
+    .overlay.hidden { opacity: 0; pointer-events: none; }
     .overlay-content {
-      background: #fff;
-      padding: 15px 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      margin: 20px;
-      width: calc(100% - 40px);
-      max-width: 400px;
-      max-height: calc(100vh - 40px);
-      overflow-y: auto;
+      background: #fff; padding: 15px 20px; border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin: 20px;
+      width: calc(100% - 40px); max-width: 400px;
+      max-height: calc(100vh - 40px); overflow-y: auto;
     }
-    .overlay-content h2 {
-      margin-top: 0;
-      font-size: 26px;
-      color: #ff5722;
-    }
-    .overlay-content p {
-      font-size: 16px;
-      margin: 10px 0 20px;
-    }
+    .overlay-content h2 { margin-top: 0; font-size: 26px; color: #ff5722; }
+    .overlay-content p { font-size: 16px; margin: 10px 0 20px; }
     .overlay-buttons button {
-      margin: 0 10px;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
+      margin: 0 10px; padding: 10px 20px; font-size: 16px;
+      border: none; border-radius: 4px; cursor: pointer;
       transition: background 0.2s;
     }
     /* unified menu button style */
     .menu-button {
-      background: #2196f3;
-      color: #fff;
-      padding: 10px;
-      font-size: 18px;
-      border: 2px solid #2196f3;
-      border-radius: 4px;
-      cursor: pointer;
+      background: #2196f3; color: #fff; padding: 10px;
+      font-size: 18px; border: 2px solid #2196f3;
+      border-radius: 4px; cursor: pointer;
       transition: background 0.2s;
     }
-    .menu-button:hover {
-      background: #1e88e5;
-    }
-    /* start menu overlay - scalable with margins */
-    #start-menu .overlay-content {
-      /* inherited from .overlay-content */
-    }
-    #start-menu img {
-      display: block;
-      margin: 0 auto 15px auto;
-      width: 70%;
-      max-width: 280px;
-      height: auto;
-      border-radius: 8px;
-    }
+    .menu-button:hover { background: #1e88e5; }
+    /* fixed buttons */
+    #menu-btn, #pause-btn { position: fixed; top: 10px; z-index: 20; }
+    #menu-btn { right: 10px; }
+    #pause-btn { right: 90px; }
+    /* paused grid style: heavily blurred and darkened */
+    #game-board.paused { filter: blur(5px) brightness(0.3) saturate(0.8); }
+    /* start menu overlay */
+    #start-menu img { display: block; margin: 0 auto 15px; width: 70%; max-width: 280px; height: auto; border-radius: 8px; }
     /* donation link styling */
-    #donate-link {
-      font-size: 16px;
-      margin: 10px 0;
-    }
-    #donate-link a {
-      color: #2196f3;
-      text-decoration: none;
-    }
-    #donate-link a:hover {
-      text-decoration: underline;
-    }
+    #donate-link { font-size: 16px; margin: 10px 0; }
+    #donate-link a { color: #2196f3; text-decoration: none; }
+    #donate-link a:hover { text-decoration: underline; }
     /* grid size buttons */
-    #grid-size-buttons {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
+    #grid-size-buttons { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
     #grid-size-buttons button {
-      padding: 8px;
-      font-size: 14px;
-      border: 2px solid #2196f3;
-      border-radius: 4px;
-      background: #fff;
-      color: #2196f3;
-      cursor: pointer;
-      transition: background 0.2s, color 0.2s;
+      padding: 8px; font-size: 14px; border: 2px solid #2196f3;
+      border-radius: 4px; background: #fff; color: #2196f3;
+      cursor: pointer; transition: background 0.2s, color 0.2s;
     }
-    #grid-size-buttons button.selected {
-      background: #2196f3;
-      color: #fff;
-    }
-    /* 2x3 grid for main menu buttons (except start) */
-    #menu-buttons-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 15px;
-    }
+    #grid-size-buttons button.selected { background: #2196f3; color: #fff; }
+    /* 2x3 grid for main menu buttons */
+    #menu-buttons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
     /* preview grid */
     #preview-grid {
-      width: 150px;
-      height: 150px;
-      margin: 15px auto;
-      display: grid;
-      gap: 2px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      width: 150px; height: 150px; margin: 15px auto;
+      display: grid; gap: 2px; border: 1px solid #ccc; border-radius: 4px;
     }
-    .preview-cell {
-      border-radius: 2px;
-    }
-    .dancefloor {
-      border: 5px solid black;
-    }
-    /* fixed menu button (top right) */
-    #menu-btn {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: #ff9800;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      padding: 8px 12px;
-      cursor: pointer;
-      transition: background 0.2s;
-      z-index: 20;
-    }
-    #menu-btn:hover {
-      background: #fb8c00;
-    }
+    .preview-cell { border-radius: 2px; }
+    .dancefloor { border: 5px solid black; }
     /* how to play overlay */
     #animated-example {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 5px;
-      width: 150px;
-      min-height: 150px;
-      margin: 0 auto 20px;
-      border: 1px solid #ccc;
-      padding: 5px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
+      width: 150px; min-height: 150px; margin: 0 auto 20px;
+      border: 1px solid #ccc; padding: 5px;
     }
     .example-cell {
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-      background: #4caf50;
-      position: relative;
+      width: 40px; height: 40px; border-radius: 4px;
+      background: #4caf50; position: relative;
     }
     .example-cell.odd {
-      background: #66bb6a;
-      animation: pulse 1.5s infinite;
+      background: #66bb6a; animation: pulse 1.5s infinite;
     }
     @keyframes pulse {
       0% { box-shadow: 0 0 0 0 rgba(255,87,34,0.7); }
@@ -296,67 +178,54 @@
     }
     /* switch styling for dancefloor mode */
     .switch {
-      position: relative;
-      display: inline-block;
-      width: 60px;
-      height: 34px;
-      vertical-align: middle;
-      margin-right: 10px;
+      position: relative; display: inline-block;
+      width: 60px; height: 34px; vertical-align: middle; margin-right: 10px;
     }
-    .switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    .switch input { opacity: 0; width: 0; height: 0; }
     .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: #ccc;
-      transition: .4s;
-      border-radius: 34px;
-      border: 1px solid #999;
+      position: absolute; cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc; transition: .4s;
+      border-radius: 34px; border: 1px solid #999;
     }
     .slider:before {
-      position: absolute;
-      content: "";
-      height: 26px;
-      width: 26px;
-      left: 4px;
-      bottom: 4px;
-      background-color: white;
-      transition: .4s;
+      position: absolute; content: "";
+      height: 26px; width: 26px; left: 4px; bottom: 4px;
+      background-color: white; transition: .4s;
       border-radius: 50%;
     }
-    input:checked + .slider {
-      background-color: #2196f3;
-    }
-    input:checked + .slider:before {
-      transform: translateX(26px);
-    }
+    input:checked + .slider { background-color: #2196f3; }
+    input:checked + .slider:before { transform: translateX(26px); }
     /* numpad info text */
-    #numpad-info {
-      font-size: 12px;
-      color: #888;
-      margin-top: 5px;
-    }
-    /* big start game button styling */
+    #numpad-info { font-size: 12px; color: #888; margin-top: 5px; }
+    /* big start game button */
     #start-btn {
-      font-size: 28px;
-      padding: 20px 40px;
-      margin: 20px auto;
-      display: block;
-      width: 80%;
+      font-size: 28px; padding: 20px 40px;
+      margin: 20px auto; display: block; width: 80%;
     }
+    /* cell gap slider in options */
+    #cell-gap-slider { width: 100%; margin: 10px 0; }
+    /* pause overlay for tips */
+    #pause-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); display: flex;
+      justify-content: center; align-items: center; z-index: 30;
+    }
+    #pause-overlay .overlay-content { backdrop-filter: blur(10px); }
+    /* tutorial complete overlay */
+    #tutorial-complete-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6); display: flex;
+      justify-content: center; align-items: center; z-index: 30;
+    }
+    #tutorial-complete-overlay.hidden { opacity: 0; pointer-events: none; }
   </style>
 </head>
 <body>
-  <!-- audio element for correct cell clicks (src will be set dynamically) -->
+  <!-- audio elements -->
   <audio id="correct-sound" preload="auto"></audio>
-
+  <audio id="wrong-sound" preload="auto" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
+  
   <h1>Odd Color Out</h1>
   <small>v0.4</small>
   <div id="byline">made by Jeff Jefferson &lt;3</div>
@@ -366,14 +235,17 @@
   <div id="timer-bar-container">
     <div id="timer-bar"></div>
   </div>
-  <!-- fixed menu button -->
+  <!-- fixed menu and pause buttons -->
   <button id="menu-btn" class="menu-button">Menu</button>
+  <button id="pause-btn" class="menu-button">Pause</button>
   <div id="game-board"></div>
+  
   <!-- game over overlay -->
   <div id="game-over-overlay" class="overlay hidden">
     <div class="overlay-content">
       <h2>game over!</h2>
       <p id="final-score">Your Score: 0</p>
+      <p id="stats-details"></p>
       <div class="overlay-buttons">
         <button id="restart-btn" class="menu-button">Restart</button>
         <button id="share-btn" class="menu-button">Share</button>
@@ -381,12 +253,34 @@
       </div>
     </div>
   </div>
-  <!-- start menu overlay -->
+  
+  <!-- pause overlay with heavy blur and darkened grid -->
+  <div id="pause-overlay" class="overlay hidden">
+    <div class="overlay-content">
+      <h2>paused</h2>
+      <p id="pause-tip">Focus on the grid while it’s paused</p>
+      <button id="resume-btn" class="menu-button">resume</button>
+    </div>
+  </div>
+  
+  <!-- tutorial complete overlay -->
+  <div id="tutorial-complete-overlay" class="overlay hidden">
+    <div class="overlay-content">
+      <h2>tutorial complete!</h2>
+      <p>Great job! Stay focused, tap quickly, and keep practicing.<br>
+      Did you know? Blue is the most calming color, and red is the first color seen by infants!</p>
+      <div class="overlay-buttons">
+        <button id="replay-tutorial-btn" class="menu-button">replay tutorial</button>
+        <button id="back-menu-btn" class="menu-button">back to menu</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- start menu overlay (no tutorial button here) -->
   <div id="start-menu" class="overlay">
     <div class="overlay-content">
       <img id="logo" src="https://github.com/JeffJeffersonT/JeffJeffersonT.github.io/blob/main/OddColorOutLogo.png?raw=true" alt="logo" />
       <h2>welcome to odd color out!</h2>
-      <!-- donation link in the start menu -->
       <div id="donate-link">
         <a href="https://ko-fi.com/jeffjefferson" target="_blank">like this game? consider donating!</a>
       </div>
@@ -399,9 +293,7 @@
         <button data-size="7">7 x 7</button>
       </div>
       <div id="numpad-info"></div>
-      <!-- preview grid -->
       <div id="preview-grid"></div>
-      <!-- dancefloor switch container -->
       <div style="margin-bottom:10px; text-align: center;">
         <label class="switch">
           <input type="checkbox" id="dancefloor-switch">
@@ -409,22 +301,20 @@
         </label>
         <span id="dancefloor-label">dancefloor: off</span>
       </div>
-      <!-- big start game button -->
-      <button id="start-btn" class="menu-button">START GAME</button>
-      <!-- if the game doesnt fit your screen, click here text -->
+      <button id="start-btn" class="menu-button">start game</button>
       <p id="screen-fit-text" style="cursor: pointer; text-decoration: underline; color: #2196f3; text-align: center; margin-top: 10px;">
         if the game doesnt fit your screen, click here
       </p>
-      <!-- other menu buttons -->
       <div id="menu-buttons-grid">
-        <button id="how-to-btn" class="menu-button">HOW TO PLAY</button>
-        <button id="options-btn" class="menu-button">OPTIONS</button>
-        <button id="leaderboard-btn" class="menu-button">LEADERBOARD</button>
-        <button id="credits-btn" class="menu-button">CREDITS</button>
+        <button id="how-to-btn" class="menu-button">how to play</button>
+        <button id="options-btn" class="menu-button">options</button>
+        <button id="leaderboard-btn" class="menu-button">leaderboard</button>
+        <button id="credits-btn" class="menu-button">credits</button>
       </div>
     </div>
   </div>
-  <!-- instructions overlay -->
+  
+  <!-- instructions overlay (how to play) with tutorial button -->
   <div id="instructions-overlay" class="overlay hidden">
     <div class="overlay-content">
       <h2>how to play</h2>
@@ -434,20 +324,11 @@
         <li>your score increases with speed</li>
         <li>increase brightness and disable night shift</li>
       </ul>
-      <div id="animated-example">
-        <div class="example-cell"></div>
-        <div class="example-cell"></div>
-        <div class="example-cell"></div>
-        <div class="example-cell"></div>
-        <div class="example-cell odd"></div>
-        <div class="example-cell"></div>
-        <div class="example-cell"></div>
-        <div class="example-cell"></div>
-        <div class="example-cell"></div>
-      </div>
+      <button id="tutorial-btn-htp" class="menu-button">try tutorial</button>
       <button id="close-instructions-btn" class="menu-button">back</button>
     </div>
   </div>
+  
   <!-- credits overlay -->
   <div id="credits-overlay" class="overlay hidden">
     <div class="overlay-content">
@@ -462,39 +343,37 @@
       <button id="close-credits-btn" class="menu-button">back</button>
     </div>
   </div>
+  
   <!-- options overlay -->
   <div id="options-overlay" class="overlay hidden">
     <div class="overlay-content">
       <h2>options</h2>
       <p>select a mode:</p>
       <form id="options-form">
-        <label>
-          <input type="radio" name="mode" value="normal" checked>
-          normal mode
-        </label>
-        <br />
-        <label>
-          <input type="radio" name="mode" value="grayscale">
-          grayscale mode
-        </label>
-        <br />
-        <label>
-          <input type="radio" name="mode" value="colorblind">
-          colorblind mode
-        </label>
+        <label><input type="radio" name="mode" value="normal" checked> normal mode</label><br />
+        <label><input type="radio" name="mode" value="grayscale"> grayscale mode</label><br />
+        <label><input type="radio" name="mode" value="colorblind"> colorblind mode</label>
       </form>
       <p>custom grid size (3-10):</p>
       <input type="number" id="custom-grid-size" min="3" max="10" placeholder="leave blank" style="width:50px;" />
       <small style="display:block; font-size:12px; color:#888;">to reset the custom size, just reopen the options</small>
+      <p>cell shape:</p>
+      <label><input type="radio" name="cellShape" value="square" checked> square</label>
+      <label><input type="radio" name="cellShape" value="circle"> circle</label>
       <p>select theme:</p>
       <div id="theme-buttons" style="display: flex; justify-content: center; gap: 10px; margin-bottom: 10px;">
         <button id="theme-light" class="menu-button selected">light theme</button>
         <button id="theme-dark" class="menu-button">dark theme</button>
+        <button id="theme-vibrant" class="menu-button">vibrant theme</button>
       </div>
-      <br />
+      <p>sound volume:</p>
+      <input type="range" id="volume-slider" min="0" max="100" value="20" />
+      <p>cell gap:</p>
+      <input type="range" id="cell-gap-slider" min="2" max="20" value="10" /><br />
       <button id="close-options-btn" class="menu-button">back</button>
     </div>
   </div>
+  
   <!-- leaderboard overlay -->
   <div id="leaderboard-overlay" class="overlay hidden">
     <div class="overlay-content">
@@ -503,6 +382,7 @@
       <button id="close-leaderboard-btn" class="menu-button">back</button>
     </div>
   </div>
+  
   <!-- screen fit help overlay -->
   <div id="screen-fit-overlay" class="overlay hidden">
     <div class="overlay-content">
@@ -512,8 +392,9 @@
       <button id="close-screen-fit-btn" class="menu-button">back</button>
     </div>
   </div>
+  
   <script>
-    // global state and helper variables
+    // Global state and helper variables
     const board = document.getElementById('game-board');
     const scoreDisplay = document.getElementById('score');
     const timerDisplay = document.getElementById('timer');
@@ -527,8 +408,11 @@
     const gridSizeButtons = document.querySelectorAll('#grid-size-buttons button');
     const previewGrid = document.getElementById('preview-grid');
     const menuBtn = document.getElementById('menu-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const resumeBtn = document.getElementById('resume-btn');
     const startBtn = document.getElementById('start-btn');
     const howToBtn = document.getElementById('how-to-btn');
+    const tutorialBtnHTP = document.getElementById('tutorial-btn-htp');
     const optionsBtn = document.getElementById('options-btn');
     const leaderboardBtn = document.getElementById('leaderboard-btn');
     const creditsBtn = document.getElementById('credits-btn');
@@ -541,15 +425,54 @@
     const customGridSizeInput = document.getElementById('custom-grid-size');
     const themeLightBtn = document.getElementById('theme-light');
     const themeDarkBtn = document.getElementById('theme-dark');
+    const themeVibrantBtn = document.getElementById('theme-vibrant');
+    const volumeSlider = document.getElementById('volume-slider');
+    const cellGapSlider = document.getElementById('cell-gap-slider');
+    const pauseOverlay = document.getElementById('pause-overlay');
+    const pauseTip = document.getElementById('pause-tip');
     const leaderboardList = document.getElementById('leaderboard-list');
     const numpadInfo = document.getElementById('numpad-info');
+    const screenFitText = document.getElementById('screen-fit-text');
+    const screenFitOverlay = document.getElementById('screen-fit-overlay');
+    const closeScreenFitBtn = document.getElementById('close-screen-fit-btn');
+    const cellShapeRadios = document.getElementsByName('cellShape');
+    const tutorialCompleteOverlay = document.getElementById('tutorial-complete-overlay');
     
-    // global variables for share info
+    // Global variables for share info
     let lastBaseColor = "";
     let lastOddColor = "";
     let lastDiff = 0;
     
-    // define an array of phone sound urls for correct cell clicks
+    // Global variable for tutorial mode
+    let tutorialMode = false;
+    
+    // Global variables for detailed stats
+    let totalReactionTime = 0;
+    let successfulClicks = 0;
+    let currentCombo = 0;
+    let highestCombo = 0;
+    
+    // Global variables for pause functionality
+    let paused = false;
+    let pausedTimeLeft = 0;
+    let timerEndTime = 0;
+    
+    // Default cell shape
+    let cellShape = "square";
+    
+    // Updated pause tips without "tip:" or "remember:" prefixes and with additional facts
+    const pauseTips = [
+      "Focus on the odd one out!",
+      "The faster you tap, the higher your score.",
+      "Look closely at the grid for subtle differences.",
+      "Keep your eyes on the target.",
+      "Practice makes perfect!",
+      "Fun fact: Red is often used to grab attention.",
+      "Did you know? Blue is known for its calming effect.",
+      "Contrast helps you notice small differences."
+    ];
+    
+    // Correct click sound URLs
     const correctSoundUrls = [
       "https://www.soundjay.com/phone/sounds/cell-phone-1-nr1.mp3",
       "https://www.soundjay.com/phone/sounds/cell-phone-1-nr2.mp3",
@@ -562,9 +485,10 @@
       "https://www.soundjay.com/phone/sounds/cell-phone-1-nr9.mp3"
     ];
     
-    // audio element for correct cell clicks
+    // Audio elements
     const correctSound = document.getElementById('correct-sound');
-    correctSound.volume = 0.2;
+    correctSound.volume = volumeSlider.value / 100;
+    const wrongSound = document.getElementById('wrong-sound');
     
     let score = 0;
     let level = 1;
@@ -577,51 +501,34 @@
     let timeLeft = baseTimeLimit;
     let dancefloorOn = false;
     let dancefloorInterval = null;
-    let gameMode = "normal"; // "normal", "grayscale", "colorblind"
-    let currentTheme = "light"; // "light" or "dark"
+    let gameMode = "normal"; // normal, grayscale, colorblind
+    let currentTheme = "light"; // light, dark, vibrant
     let currentTimeLimit = baseTimeLimit;
     
-    // define numpad mapping and flag for single key processing
+    // Numpad mapping
     const numpadMapping = {
-      "Numpad7": 0,
-      "Numpad8": 1,
-      "Numpad9": 2,
-      "Numpad4": 3,
-      "Numpad5": 4,
-      "Numpad6": 5,
-      "Numpad1": 6,
-      "Numpad2": 7,
-      "Numpad3": 8
+      "Numpad7": 0, "Numpad8": 1, "Numpad9": 2,
+      "Numpad4": 3, "Numpad5": 4, "Numpad6": 5,
+      "Numpad1": 6, "Numpad2": 7, "Numpad3": 8
     };
     let numpadKeyDown = false;
     
-    // function to get an emoji representing an rgb color
+    // Get emoji for color string
     function getEmojiForColor(colorStr) {
-      // expect colorStr format: "rgb(r, g, b)"
       const nums = colorStr.match(/\d+/g);
       if (!nums || nums.length < 3) return "⬜";
-      const r = parseInt(nums[0]);
-      const g = parseInt(nums[1]);
-      const b = parseInt(nums[2]);
+      const r = parseInt(nums[0]), g = parseInt(nums[1]), b = parseInt(nums[2]);
       const brightness = (r + g + b) / 3;
       if (brightness < 50) return "⬛";
       if (brightness > 230) return "⬜";
-      // if red and blue are high and green is low, choose purple
       if (r > 150 && b > 150 && g < 100) return "🟪";
-      if (r >= g && r >= b) {
-        if (Math.abs(r - g) < 20 && r > 150) return "🟨";
-        return "🟥";
-      }
-      if (g >= r && g >= b) {
-        return "🟩";
-      }
-      if (b >= r && b >= g) {
-        return "🟦";
-      }
+      if (r >= g && r >= b) { if (Math.abs(r - g) < 20 && r > 150) return "🟨"; return "🟥"; }
+      if (g >= r && g >= b) return "🟩";
+      if (b >= r && b >= g) return "🟦";
       return "⬜";
     }
     
-    // function to get a qualitative description for shade difference
+    // Get qualitative shade description
     function getShadeDescription(diff) {
       if (diff >= 45) return "very low";
       else if (diff >= 40) return "low";
@@ -631,7 +538,49 @@
       else return diff;
     }
     
-    // grid size button events
+    // Update volume based on slider
+    volumeSlider.addEventListener('input', () => {
+      correctSound.volume = volumeSlider.value / 100;
+      wrongSound.volume = volumeSlider.value / 100;
+    });
+    
+    // Update cell gap based on slider
+    cellGapSlider.addEventListener('input', () => {
+      board.style.gap = cellGapSlider.value + "px";
+    });
+    
+    // Update cell shape from radio buttons
+    cellShapeRadios.forEach(radio => {
+      radio.addEventListener('change', () => { cellShape = radio.value; });
+    });
+    
+    // Theme buttons
+    themeVibrantBtn.addEventListener('click', () => {
+      currentTheme = "vibrant";
+      themeVibrantBtn.classList.add('selected');
+      themeLightBtn.classList.remove('selected');
+      themeDarkBtn.classList.remove('selected');
+      document.body.style.background = "linear-gradient(135deg, #ff9a9e, #fad0c4)";
+      document.body.style.color = "#333";
+    });
+    themeLightBtn.addEventListener('click', () => {
+      currentTheme = "light";
+      themeLightBtn.classList.add('selected');
+      themeDarkBtn.classList.remove('selected');
+      themeVibrantBtn.classList.remove('selected');
+      document.body.style.background = "linear-gradient(135deg, #f5f7fa, #c3cfe2)";
+      document.body.style.color = "#333";
+    });
+    themeDarkBtn.addEventListener('click', () => {
+      currentTheme = "dark";
+      themeDarkBtn.classList.add('selected');
+      themeLightBtn.classList.remove('selected');
+      themeVibrantBtn.classList.remove('selected');
+      document.body.style.background = "#333";
+      document.body.style.color = "#eee";
+    });
+    
+    // Grid size buttons
     gridSizeButtons.forEach(button => {
       button.addEventListener('click', () => {
         gridSizeButtons.forEach(btn => btn.classList.remove('selected'));
@@ -642,35 +591,16 @@
       });
     });
     
-    // toggle dancefloor mode
+    // Toggle dancefloor mode
     dancefloorSwitch.addEventListener('change', () => {
       dancefloorOn = dancefloorSwitch.checked;
       dancefloorLabel.textContent = dancefloorOn ? 'dancefloor: on' : 'dancefloor: off';
       updatePreview();
     });
     
-    // theme button events
-    themeLightBtn.addEventListener('click', () => {
-      currentTheme = "light";
-      themeLightBtn.classList.add('selected');
-      themeDarkBtn.classList.remove('selected');
-      document.body.style.background = "linear-gradient(135deg, #f5f7fa, #c3cfe2)";
-      document.body.style.color = "#333";
-    });
-    themeDarkBtn.addEventListener('click', () => {
-      currentTheme = "dark";
-      themeDarkBtn.classList.add('selected');
-      themeLightBtn.classList.remove('selected');
-      document.body.style.background = "#333";
-      document.body.style.color = "#eee";
-    });
-    
-    // generate preview grid
+    // Generate preview grid
     function updatePreview() {
-      if (dancefloorInterval) {
-        clearInterval(dancefloorInterval);
-        dancefloorInterval = null;
-      }
+      if (dancefloorInterval) { clearInterval(dancefloorInterval); dancefloorInterval = null; }
       const customSize = parseInt(customGridSizeInput.value);
       gridSize = (!isNaN(customSize) && customSize >= 3 && customSize <= 10) ? customSize : gridSize;
       previewGrid.innerHTML = '';
@@ -684,9 +614,7 @@
         }
         dancefloorInterval = setInterval(() => {
           const cells = previewGrid.querySelectorAll('.preview-cell');
-          cells.forEach(cell => {
-            cell.style.backgroundColor = randomDanceColor();
-          });
+          cells.forEach(cell => { cell.style.backgroundColor = randomDanceColor(); });
         }, 1000);
       } else {
         if (gameMode === "grayscale") {
@@ -718,9 +646,7 @@
         } else {
           let diffFactor = Math.max(50 - level, 25);
           if (score >= 3000) diffFactor = 25;
-          if (Math.random() < 0.2) { 
-            diffFactor = Math.floor(Math.random() * (50 - 30 + 1)) + 30;
-          }
+          if (Math.random() < 0.2) { diffFactor = Math.floor(Math.random() * (50 - 30 + 1)) + 30; }
           const baseColor = randomRGB();
           const baseColorString = rgbToString(baseColor);
           const oddColor = adjustColor(baseColor, diffFactor);
@@ -757,19 +683,12 @@
       return { r: adjust(r), g: adjust(g), b: adjust(b) };
     }
     
-    function randomGray() {
-      return Math.floor(Math.random() * 156) + 100;
-    }
-    
-    function adjustGray(val, factor) {
-      return (val + factor <= 255) ? val + factor : val - factor;
-    }
+    function randomGray() { return Math.floor(Math.random() * 156) + 100; }
+    function adjustGray(val, factor) { return (val + factor <= 255) ? val + factor : val - factor; }
     
     function hexToRgb(hex) {
       hex = hex.replace(/^#/, '');
-      if (hex.length === 3) {
-        hex = hex.split('').map(c => c + c).join('');
-      }
+      if (hex.length === 3) { hex = hex.split('').map(c => c + c).join(''); }
       const bigint = parseInt(hex, 16);
       const r = (bigint >> 16) & 255;
       const g = (bigint >> 8) & 255;
@@ -784,35 +703,77 @@
     function updateTimerDisplay() {
       timerDisplay.textContent = `Time Left: ${(timeLeft / 1000).toFixed(2)}s`;
       timerBar.style.width = (timeLeft / currentTimeLimit * 100) + '%';
+      if (timeLeft / currentTimeLimit < 0.3) { timerDisplay.classList.add('timer-warning'); }
+      else { timerDisplay.classList.remove('timer-warning'); }
     }
     
-    // timer thresholds:
-    // score <3000: 5s; 3000<=score<6000: 4s; 6000<=score<12000: 3s; 12000<=score<25000: 2s; score>=25000: 1s.
+    // Timer functionality (skipped in tutorial mode)
     function startTimer() {
-      if (score >= 25000) {
-        currentTimeLimit = 1000;
-      } else if (score >= 12000) {
-        currentTimeLimit = 2000;
-      } else if (score >= 6000) {
-        currentTimeLimit = 3000;
-      } else if (score >= 3000) {
-        currentTimeLimit = 4000;
-      } else {
-        currentTimeLimit = baseTimeLimit;
-      }
+      if (tutorialMode) return;
+      if (paused) return;
+      currentTimeLimit = score >= 25000 ? 1000 :
+                         score >= 12000 ? 2000 :
+                         score >= 6000 ? 3000 :
+                         score >= 3000 ? 4000 : baseTimeLimit;
+      // Reset timeLeft for new round
+      timeLeft = currentTimeLimit;
       const startTime = performance.now();
-      const endTime = startTime + currentTimeLimit;
+      timerEndTime = startTime + timeLeft;
       function updateTimer() {
+        if (paused) return;
         const now = performance.now();
-        timeLeft = Math.max(0, endTime - now);
+        timeLeft = Math.max(0, timerEndTime - now);
         updateTimerDisplay();
-        if (timeLeft <= 0) {
-          gameOver();
-        } else {
-          timerAnimationFrame = requestAnimationFrame(updateTimer);
-        }
+        if (timeLeft <= 0) { gameOver(); }
+        else { timerAnimationFrame = requestAnimationFrame(updateTimer); }
       }
       timerAnimationFrame = requestAnimationFrame(updateTimer);
+    }
+    
+    function pauseTimer() {
+      paused = true;
+      cancelAnimationFrame(timerAnimationFrame);
+      pausedTimeLeft = timeLeft;
+      pauseBtn.textContent = "Resume";
+      board.classList.add("paused");
+      board.style.pointerEvents = "none";
+      const tip = pauseTips[Math.floor(Math.random() * pauseTips.length)];
+      pauseTip.textContent = tip;
+      pauseOverlay.classList.remove("hidden");
+    }
+    
+    function resumeTimer() {
+      paused = false;
+      timeLeft = pausedTimeLeft;
+      pauseBtn.textContent = "Pause";
+      board.classList.remove("paused");
+      board.style.pointerEvents = "auto";
+      pauseOverlay.classList.add("hidden");
+      startTimer();
+    }
+    
+    pauseBtn.addEventListener('click', () => {
+      if (!gameActive) return;
+      if (!paused) { pauseTimer(); } else { resumeTimer(); }
+    });
+    
+    resumeBtn.addEventListener('click', resumeTimer);
+    
+    // Particle effect on correct tap
+    function triggerParticles(x, y) {
+      const particleCount = 20;
+      for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        particle.style.left = x + "px";
+        particle.style.top = y + "px";
+        const dx = (Math.random() - 0.5) * 100 + "px";
+        const dy = (Math.random() - 0.5) * 100 + "px";
+        particle.style.setProperty('--dx', dx);
+        particle.style.setProperty('--dy', dy);
+        document.body.appendChild(particle);
+        setTimeout(() => { particle.remove(); }, 1000);
+      }
     }
     
     function createBoard() {
@@ -838,16 +799,13 @@
       } else {
         let diffFactor = Math.max(50 - level, 25);
         if (score >= 3000) diffFactor = 25;
-        if (Math.random() < 0.2) { 
-          diffFactor = Math.floor(Math.random() * (50 - 30 + 1)) + 30;
-        }
+        if (Math.random() < 0.2) { diffFactor = Math.floor(Math.random() * (50 - 30 + 1)) + 30; }
         const baseColor = randomRGB();
         baseColorString = rgbToString(baseColor);
         const oddColor = adjustColor(baseColor, diffFactor);
         oddColorString = rgbToString(oddColor);
         lastDiff = diffFactor;
       }
-      // store last used colors for sharing
       lastBaseColor = baseColorString;
       lastOddColor = oddColorString;
       
@@ -856,31 +814,71 @@
       for (let i = 0; i < gridSize * gridSize; i++) {
         const cell = document.createElement('div');
         cell.classList.add('cell');
+        cell.style.borderRadius = (cellShape === "circle") ? "50%" : "8px";
         cell.style.backgroundColor = (i === oddIndex) ? oddColorString : baseColorString;
-        if (i === oddIndex) {
-          cell.dataset.odd = 'true';
-        }
+        if (i === oddIndex) cell.dataset.odd = 'true';
         cell.addEventListener('click', cellClicked);
         board.appendChild(cell);
       }
-      startTimer();
+      // In tutorial mode, highlight the correct cell and show a tip; no timer.
+      if (tutorialMode) {
+        const oddCell = board.children[currentOddIndex];
+        oddCell.style.border = "4px dashed #000";
+        timerDisplay.textContent = "Tutorial: Tap the highlighted square!";
+      } else { startTimer(); }
+    }
+    
+    // Show temporary error popup in tutorial mode
+    function showTutorialError() {
+      const errorPopup = document.createElement('div');
+      errorPopup.style.position = "absolute";
+      errorPopup.style.top = "50%";
+      errorPopup.style.left = "50%";
+      errorPopup.style.transform = "translate(-50%, -50%)";
+      errorPopup.style.padding = "10px 20px";
+      errorPopup.style.background = "#fff";
+      errorPopup.style.border = "2px solid #ff5722";
+      errorPopup.style.borderRadius = "8px";
+      errorPopup.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)";
+      errorPopup.textContent = "Pick the shape that looks slightly different in color to the rest!";
+      document.body.appendChild(errorPopup);
+      setTimeout(() => { errorPopup.remove(); }, 2000);
     }
     
     function cellClicked(e) {
-      if (!gameActive) return;
+      if (!gameActive || paused) return;
       cancelAnimationFrame(timerAnimationFrame);
+      const reactionTime = currentTimeLimit - timeLeft;
       if (e.target.dataset.odd === 'true') {
+        if (navigator.vibrate) navigator.vibrate(50);
+        const rect = e.target.getBoundingClientRect();
+        const x = rect.left + rect.width / 2;
+        const y = rect.top + rect.height / 2;
+        triggerParticles(x, y);
         const randomIndex = Math.floor(Math.random() * correctSoundUrls.length);
         correctSound.src = correctSoundUrls[randomIndex];
         correctSound.play();
+        successfulClicks++;
+        totalReactionTime += reactionTime;
+        currentCombo++;
+        if (currentCombo > highestCombo) highestCombo = currentCombo;
         const multiplier = 1 + (gridSize - 4) * 0.1;
         let bonus = Math.round((timeLeft / currentTimeLimit) * 100 * multiplier);
         score += bonus;
         scoreDisplay.textContent = 'Score: ' + score;
         level++;
+        if (tutorialMode) {
+          board.children[currentOddIndex].style.border = "";
+          setTimeout(() => { tutorialCompleteOverlay.classList.remove("hidden"); }, 500);
+          return;
+        }
         createBoard();
       } else {
-        gameOver();
+        if (tutorialMode) { showTutorialError(); return; }
+        if (navigator.vibrate) navigator.vibrate(100);
+        e.target.classList.add('shake');
+        wrongSound.play();
+        setTimeout(() => { gameOver(); }, 500);
       }
     }
     
@@ -890,21 +888,23 @@
       let correctCell = board.children[currentOddIndex];
       correctCell.classList.add('correct-highlight');
       document.getElementById('final-score').textContent = 'Your Score: ' + score;
+      let avgReaction = successfulClicks ? (totalReactionTime / successfulClicks).toFixed(0) + " ms" : "N/A";
+      document.getElementById('stats-details').textContent =
+        "Max Combo: " + highestCombo + " | Average Reaction Time: " + avgReaction;
       updateLeaderboard();
       gameOverOverlay.classList.remove('hidden');
     }
     
     function restartGame() {
-      score = 0;
-      level = 1;
-      roundsPlayed = 0;
+      score = 0; level = 1; roundsPlayed = 0;
+      totalReactionTime = 0; successfulClicks = 0;
+      currentCombo = 0; highestCombo = 0;
       scoreDisplay.textContent = 'Score: ' + score;
       gameOverOverlay.classList.add('hidden');
       createBoard();
     }
     
     function shareGame() {
-      // build an emoji grid mosaic based on the last played grid colors
       const baseEmoji = getEmojiForColor(lastBaseColor);
       const oddEmoji = getEmojiForColor(lastOddColor);
       let mosaic = "";
@@ -917,19 +917,20 @@
       }
       const modeText = gameMode.charAt(0).toUpperCase() + gameMode.slice(1);
       const shadeDesc = getShadeDescription(lastDiff);
+      let avgReaction = successfulClicks ? (totalReactionTime / successfulClicks).toFixed(0) + " ms" : "N/A";
       const shareText = `I scored ${score} points in Odd Color Out!
 Mode: ${modeText}
 Grid Size: ${gridSize} x ${gridSize}
-Shade difference: ${shadeDesc}
+Shade Difference: ${shadeDesc}
+Max Combo: ${highestCombo}
+Average Reaction Time: ${avgReaction}
 Grid:
 ${mosaic}Try it out at: http://jeffjeffersont.github.io`;
       
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(shareText).then(() => {
           document.getElementById('share-btn').textContent = 'Copied!';
-          setTimeout(() => {
-            document.getElementById('share-btn').textContent = 'Share';
-          }, 2000);
+          setTimeout(() => { document.getElementById('share-btn').textContent = 'Share'; }, 2000);
         });
       } else {
         const textArea = document.createElement("textarea");
@@ -942,12 +943,8 @@ ${mosaic}Try it out at: http://jeffjeffersont.github.io`;
         try {
           document.execCommand('copy');
           document.getElementById('share-btn').textContent = 'Copied!';
-          setTimeout(() => {
-            document.getElementById('share-btn').textContent = 'Share';
-          }, 2000);
-        } catch (err) {
-          console.error('failed to copy:', err);
-        }
+          setTimeout(() => { document.getElementById('share-btn').textContent = 'Share'; }, 2000);
+        } catch (err) { console.error('failed to copy:', err); }
         document.body.removeChild(textArea);
       }
     }
@@ -966,20 +963,22 @@ ${mosaic}Try it out at: http://jeffjeffersont.github.io`;
       });
     }
     
+    // startGame resets tutorialMode so normal games start normally
     function startGame() {
+      tutorialMode = false;
       startMenu.classList.add('hidden');
-      score = 0;
-      level = 1;
-      roundsPlayed = 0;
+      totalReactionTime = 0; successfulClicks = 0;
+      currentCombo = 0; highestCombo = 0;
+      score = 0; level = 1; roundsPlayed = 0;
       scoreDisplay.textContent = 'Score: ' + score;
       createBoard();
     }
     
     function goToMenu() {
       board.innerHTML = '';
-      score = 0;
-      level = 1;
-      roundsPlayed = 0;
+      score = 0; level = 1; roundsPlayed = 0;
+      totalReactionTime = 0; successfulClicks = 0;
+      currentCombo = 0; highestCombo = 0;
       scoreDisplay.textContent = 'Score: ' + score;
       cancelAnimationFrame(timerAnimationFrame);
       gameOverOverlay.classList.add('hidden');
@@ -987,40 +986,42 @@ ${mosaic}Try it out at: http://jeffjeffersont.github.io`;
       updatePreview();
     }
     
-    // numpad event listeners for 3x3 grid
+    // Tutorial mode: skip menu and start game in tutorial mode (no timer)
+    function startTutorial() {
+      tutorialMode = true;
+      startMenu.classList.add('hidden');
+      timerDisplay.textContent = "";
+      createBoard();
+    }
+    
+    // Numpad events for 3x3 grid
     document.addEventListener('keydown', (e) => {
       if (gameActive && gridSize === 3 && !numpadKeyDown) {
-        if(numpadMapping[e.code] !== undefined) {
+        if (numpadMapping[e.code] !== undefined) {
           numpadKeyDown = true;
           let cell = board.children[numpadMapping[e.code]];
-          if(cell) cell.click();
+          if (cell) cell.click();
         }
       }
     });
-    
     document.addEventListener('keyup', (e) => {
       if (gameActive && gridSize === 3 && numpadMapping[e.code] !== undefined) {
         numpadKeyDown = false;
       }
     });
     
-    // event listeners for overlays and buttons
+    // Overlay event listeners
     startBtn.addEventListener('click', startGame);
     document.getElementById('restart-btn').addEventListener('click', restartGame);
     document.getElementById('share-btn').addEventListener('click', shareGame);
     howToBtn.addEventListener('click', () => { instructionsOverlay.classList.remove('hidden'); });
+    tutorialBtnHTP.addEventListener('click', startTutorial);
     optionsBtn.addEventListener('click', () => {
       optionsOverlay.classList.remove('hidden');
       const radios = document.getElementsByName('mode');
       radios.forEach(radio => { radio.checked = (radio.value === gameMode); });
+      cellShapeRadios.forEach(radio => { radio.checked = (radio.value === cellShape); });
       customGridSizeInput.value = "";
-      if (currentTheme === "dark") {
-        themeDarkBtn.classList.add('selected');
-        themeLightBtn.classList.remove('selected');
-      } else {
-        themeLightBtn.classList.add('selected');
-        themeDarkBtn.classList.remove('selected');
-      }
     });
     leaderboardBtn.addEventListener('click', () => {
       updateLeaderboard();
@@ -1032,6 +1033,7 @@ ${mosaic}Try it out at: http://jeffjeffersont.github.io`;
     closeOptionsBtn.addEventListener('click', () => {
       const radios = document.getElementsByName('mode');
       radios.forEach(radio => { if (radio.checked) { gameMode = radio.value; } });
+      cellShapeRadios.forEach(radio => { if (radio.checked) { cellShape = radio.value; } });
       const customSize = parseInt(customGridSizeInput.value);
       if (!isNaN(customSize) && customSize >= 3 && customSize <= 10) { gridSize = customSize; }
       optionsOverlay.classList.add('hidden');
@@ -1040,32 +1042,21 @@ ${mosaic}Try it out at: http://jeffjeffersont.github.io`;
     document.getElementById('close-leaderboard-btn').addEventListener('click', () => { leaderboardOverlay.classList.add('hidden'); });
     menuBtn.addEventListener('click', goToMenu);
     document.getElementById('menu-btn-overlay').addEventListener('click', goToMenu);
+    screenFitText.addEventListener('click', () => { screenFitOverlay.classList.remove('hidden'); });
+    closeScreenFitBtn.addEventListener('click', () => { screenFitOverlay.classList.add('hidden'); });
     
-    // screen fit help overlay event listeners
-    const screenFitText = document.getElementById('screen-fit-text');
-    const screenFitOverlay = document.getElementById('screen-fit-overlay');
-    const closeScreenFitBtn = document.getElementById('close-screen-fit-btn');
-    
-    screenFitText.addEventListener('click', () => {
-      screenFitOverlay.classList.remove('hidden');
+    // Tutorial complete overlay buttons
+    document.getElementById('replay-tutorial-btn').addEventListener('click', () => {
+      tutorialCompleteOverlay.classList.add('hidden');
+      tutorialMode = true;
+      startGame();
     });
-    closeScreenFitBtn.addEventListener('click', () => {
-      screenFitOverlay.classList.add('hidden');
+    document.getElementById('back-menu-btn').addEventListener('click', () => {
+      tutorialCompleteOverlay.classList.add('hidden');
+      goToMenu();
     });
     
-    function goToMenu() {
-      board.innerHTML = '';
-      score = 0;
-      level = 1;
-      roundsPlayed = 0;
-      scoreDisplay.textContent = 'Score: ' + score;
-      cancelAnimationFrame(timerAnimationFrame);
-      gameOverOverlay.classList.add('hidden');
-      startMenu.classList.remove('hidden');
-      updatePreview();
-    }
-    
-    // initialize preview on page load
+    // Initialize preview on page load
     updatePreview();
   </script>
 </body>
