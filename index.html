@@ -76,14 +76,7 @@
       box-shadow: 0 0 12px rgba(255,87,34,0.8);
     }
     /* shake animation for wrong taps */
-    @keyframes shake {
-      0% { transform: translateX(0px); }
-      20% { transform: translateX(-5px); }
-      40% { transform: translateX(5px); }
-      60% { transform: translateX(-5px); }
-      80% { transform: translateX(5px); }
-      100% { transform: translateX(0px); }
-    }
+    @keyframes shake { 0% { transform: translateX(0px); } 20% { transform: translateX(-5px); } 40% { transform: translateX(5px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } 100% { transform: translateX(0px); } }
     .shake { animation: shake 0.5s; }
     /* particle effect */
     .particle {
@@ -92,14 +85,10 @@
       pointer-events: none; opacity: 1;
       animation: particle-fade 1s forwards;
     }
-    @keyframes particle-fade {
-      to { transform: translate(var(--dx), var(--dy)); opacity: 0; }
-    }
+    @keyframes particle-fade { to { transform: translate(var(--dx), var(--dy)); opacity: 0; } }
     /* game over fade out */
     .fade-out { animation: fadeOut 0.5s forwards; }
-    @keyframes fadeOut {
-      to { opacity: 0; transform: scale(0.9); }
-    }
+    @keyframes fadeOut { to { opacity: 0; transform: scale(0.9); } }
     /* overlay styles */
     .overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -129,6 +118,35 @@
       transition: background 0.2s;
     }
     .menu-button:hover { background: #1e88e5; }
+    /* small button style for timed mode options */
+    .small-button {
+      background: #fff; 
+      color: #2196f3; 
+      padding: 8px 12px; 
+      font-size: 14px; 
+      border: 2px solid #2196f3;
+      border-radius: 4px; 
+      cursor: pointer;
+      margin: 0 4px;
+      transition: background 0.2s, color 0.2s;
+    }
+    /* When selected, each button shows a distinct color */
+    .small-button[data-time="15000"].selected {
+      background: #ff5733;
+      color: #fff;
+    }
+    .small-button[data-time="30000"].selected {
+      background: #2196f3;
+      color: #fff;
+    }
+    .small-button[data-time="60000"].selected {
+      background: #4caf50;
+      color: #fff;
+    }
+    .small-button:hover {
+      background: #2196f3;
+      color: #fff;
+    }
     /* fixed buttons */
     #menu-btn, #pause-btn { position: fixed; top: 10px; z-index: 20; }
     #menu-btn { right: 10px; }
@@ -148,7 +166,8 @@
       border-radius: 4px; background: #fff; color: #2196f3;
       cursor: pointer; transition: background 0.2s, color 0.2s;
     }
-    #grid-size-buttons button.selected { background: #2196f3; color: #fff; }
+    /* Default grid size is now 5x5 */
+    #grid-size-buttons button[data-size="5"] { background: #2196f3; color: #fff; }
     /* 2x3 grid for main menu buttons */
     #menu-buttons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
     /* preview grid */
@@ -176,7 +195,7 @@
       70% { box-shadow: 0 0 0 8px rgba(255,87,34,0); }
       100% { box-shadow: 0 0 0 0 rgba(255,87,34,0); }
     }
-    /* switch styling for dancefloor mode */
+    /* switch styling for dancefloor mode and mode toggle */
     .switch {
       position: relative; display: inline-block;
       width: 60px; height: 34px; vertical-align: middle; margin-right: 10px;
@@ -225,6 +244,7 @@
   <!-- audio elements -->
   <audio id="correct-sound" preload="auto"></audio>
   <audio id="wrong-sound" preload="auto" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
+  <audio id="shield-break-sound" preload="auto" src="https://www.soundjay.com/button/sounds/button-4.mp3"></audio>
   
   <h1>Odd Color Out</h1>
   <small>v0.4</small>
@@ -235,6 +255,10 @@
   <div id="timer-bar-container">
     <div id="timer-bar"></div>
   </div>
+  
+  <!-- Shield indicator (shows below the grid when a shield is acquired) -->
+  <div id="shield-indicator" style="display:none; font-size:24px; margin:10px;">🛡️</div>
+  
   <!-- fixed menu and pause buttons -->
   <button id="menu-btn" class="menu-button">Menu</button>
   <button id="pause-btn" class="menu-button">Pause</button>
@@ -268,7 +292,7 @@
     <div class="overlay-content">
       <h2>tutorial complete!</h2>
       <p>Great job! Stay focused, tap quickly, and keep practicing.<br>
-      Did you know? Blue is the most calming color, and red is the first color seen by infants!</p>
+         Fun fact: Red grabs attention and blue calms the mind.</p>
       <div class="overlay-buttons">
         <button id="replay-tutorial-btn" class="menu-button">replay tutorial</button>
         <button id="back-menu-btn" class="menu-button">back to menu</button>
@@ -287,19 +311,35 @@
       <p>select your grid size:</p>
       <div id="grid-size-buttons">
         <button data-size="3">3 x 3</button>
-        <button data-size="4" class="selected">4 x 4</button>
-        <button data-size="5">5 x 5</button>
+        <button data-size="4">4 x 4</button>
+        <button data-size="5" class="selected">5 x 5</button>
         <button data-size="6">6 x 6</button>
         <button data-size="7">7 x 7</button>
       </div>
       <div id="numpad-info"></div>
       <div id="preview-grid"></div>
+      <!-- Existing dancefloor toggle -->
       <div style="margin-bottom:10px; text-align: center;">
         <label class="switch">
           <input type="checkbox" id="dancefloor-switch">
           <span class="slider"></span>
         </label>
         <span id="dancefloor-label">dancefloor: off</span>
+      </div>
+      <!-- New mode toggle: endless (left) / timed (right) -->
+      <div style="margin-bottom:10px; text-align: center;">
+          <span style="margin-right: 8px;">endless</span>
+          <label class="switch" style="vertical-align: middle;">
+              <input type="checkbox" id="mode-toggle">
+              <span class="slider"></span>
+          </label>
+          <span style="margin-left: 8px;">timed</span>
+      </div>
+      <!-- Timed mode options as small buttons -->
+      <div id="timed-mode-options" style="display:none; text-align: center; margin-bottom:10px;">
+          <button class="small-button" data-time="15000">15s</button>
+          <button class="small-button selected" data-time="30000">30s</button>
+          <button class="small-button" data-time="60000">60s</button>
       </div>
       <button id="start-btn" class="menu-button">start game</button>
       <p id="screen-fit-text" style="cursor: pointer; text-decoration: underline; color: #2196f3; text-align: center; margin-top: 10px;">
@@ -395,6 +435,9 @@
   
   <script>
     // Global state and helper variables
+    let gridSize = 5; // Default grid size is 5x5
+    let roundStartTime = 0; // For timed mode reaction time calculation
+
     const board = document.getElementById('game-board');
     const scoreDisplay = document.getElementById('score');
     const timerDisplay = document.getElementById('timer');
@@ -437,6 +480,8 @@
     const closeScreenFitBtn = document.getElementById('close-screen-fit-btn');
     const cellShapeRadios = document.getElementsByName('cellShape');
     const tutorialCompleteOverlay = document.getElementById('tutorial-complete-overlay');
+    const shieldIndicator = document.getElementById('shield-indicator');
+    const shieldBreakSound = document.getElementById('shield-break-sound');
     
     // Global variables for share info
     let lastBaseColor = "";
@@ -457,19 +502,34 @@
     let pausedTimeLeft = 0;
     let timerEndTime = 0;
     
+    // Global variable for shield powerup (only in endless mode)
+    let shieldActive = false;
+    
     // Default cell shape
     let cellShape = "square";
     
-    // Updated pause tips without "tip:" or "remember:" prefixes and with additional facts
+    // Global variables for game mode (color modes) and play mode (endless/timed)
+    let gameMode = "normal"; // normal, grayscale, colorblind
+    let playMode = "endless"; // endless (default) or timed
+    let currentTheme = "light"; // light, dark, vibrant
+    let currentTimeLimit = 5000;
+    let timeLeft = currentTimeLimit;
+    let timerAnimationFrame;
+    
+    // Global variables for dancefloor preview
+    let dancefloorOn = false;
+    let dancefloorInterval = null;
+    
+    // Updated pause tips
     const pauseTips = [
       "Focus on the odd one out!",
       "The faster you tap, the higher your score.",
       "Look closely at the grid for subtle differences.",
       "Keep your eyes on the target.",
       "Practice makes perfect!",
-      "Fun fact: Red is often used to grab attention.",
-      "Did you know? Blue is known for its calming effect.",
-      "Contrast helps you notice small differences."
+      "Red grabs attention; blue calms the mind.",
+      "Contrast can help you spot differences.",
+      "Colors can affect your mood – have fun!"
     ];
     
     // Correct click sound URLs
@@ -489,21 +549,11 @@
     const correctSound = document.getElementById('correct-sound');
     correctSound.volume = volumeSlider.value / 100;
     const wrongSound = document.getElementById('wrong-sound');
+    shieldBreakSound.volume = volumeSlider.value / 100;
     
     let score = 0;
     let level = 1;
     let roundsPlayed = 0;
-    let gridSize = 4;
-    let gameActive = false;
-    let currentOddIndex = null;
-    let timerAnimationFrame;
-    const baseTimeLimit = 5000;
-    let timeLeft = baseTimeLimit;
-    let dancefloorOn = false;
-    let dancefloorInterval = null;
-    let gameMode = "normal"; // normal, grayscale, colorblind
-    let currentTheme = "light"; // light, dark, vibrant
-    let currentTimeLimit = baseTimeLimit;
     
     // Numpad mapping
     const numpadMapping = {
@@ -542,6 +592,7 @@
     volumeSlider.addEventListener('input', () => {
       correctSound.volume = volumeSlider.value / 100;
       wrongSound.volume = volumeSlider.value / 100;
+      shieldBreakSound.volume = volumeSlider.value / 100;
     });
     
     // Update cell gap based on slider
@@ -598,7 +649,24 @@
       updatePreview();
     });
     
-    // Generate preview grid
+    // New mode toggle: endless/timed
+    const modeToggle = document.getElementById('mode-toggle');
+    const timedModeOptions = document.getElementById('timed-mode-options');
+    modeToggle.addEventListener('change', () => {
+      playMode = modeToggle.checked ? "timed" : "endless";
+      timedModeOptions.style.display = playMode === "timed" ? "block" : "none";
+    });
+    const timedButtons = timedModeOptions.querySelectorAll('.small-button');
+    let timedTimeLimit = 30000; // default 30 seconds
+    timedButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        timedButtons.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        timedTimeLimit = parseInt(btn.dataset.time);
+      });
+    });
+    
+    // Generate preview grid (always visible on load)
     function updatePreview() {
       if (dancefloorInterval) { clearInterval(dancefloorInterval); dancefloorInterval = null; }
       const customSize = parseInt(customGridSizeInput.value);
@@ -707,15 +775,14 @@
       else { timerDisplay.classList.remove('timer-warning'); }
     }
     
-    // Timer functionality (skipped in tutorial mode)
+    // Timer for endless mode (resets each round)
     function startTimer() {
       if (tutorialMode) return;
       if (paused) return;
       currentTimeLimit = score >= 25000 ? 1000 :
                          score >= 12000 ? 2000 :
                          score >= 6000 ? 3000 :
-                         score >= 3000 ? 4000 : baseTimeLimit;
-      // Reset timeLeft for new round
+                         score >= 3000 ? 4000 : 5000;
       timeLeft = currentTimeLimit;
       const startTime = performance.now();
       timerEndTime = startTime + timeLeft;
@@ -728,6 +795,16 @@
         else { timerAnimationFrame = requestAnimationFrame(updateTimer); }
       }
       timerAnimationFrame = requestAnimationFrame(updateTimer);
+    }
+    
+    // Timer for timed mode (single countdown for entire game)
+    function updateTimedTimer() {
+      if (paused) return;
+      const now = performance.now();
+      timeLeft = Math.max(0, timerEndTime - now);
+      updateTimerDisplay();
+      if (timeLeft <= 0) { gameOver(); }
+      else { timerAnimationFrame = requestAnimationFrame(updateTimedTimer); }
     }
     
     function pauseTimer() {
@@ -749,7 +826,12 @@
       board.classList.remove("paused");
       board.style.pointerEvents = "auto";
       pauseOverlay.classList.add("hidden");
-      startTimer();
+      if (playMode === "endless") {
+        startTimer();
+      } else if (playMode === "timed") {
+        timerEndTime = performance.now() + timeLeft;
+        timerAnimationFrame = requestAnimationFrame(updateTimedTimer);
+      }
     }
     
     pauseBtn.addEventListener('click', () => {
@@ -776,11 +858,13 @@
       }
     }
     
+    // Create board with optional shield powerup (shield only added in endless mode)
     function createBoard() {
       board.innerHTML = '';
       gameActive = true;
       board.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
       roundsPlayed++;
+      
       let baseColorString, oddColorString;
       if (gameMode === "grayscale") {
         let gray = randomGray();
@@ -811,6 +895,8 @@
       
       let oddIndex = Math.floor(Math.random() * (gridSize * gridSize));
       currentOddIndex = oddIndex;
+      
+      // Create grid cells
       for (let i = 0; i < gridSize * gridSize; i++) {
         const cell = document.createElement('div');
         cell.classList.add('cell');
@@ -820,12 +906,41 @@
         cell.addEventListener('click', cellClicked);
         board.appendChild(cell);
       }
-      // In tutorial mode, highlight the correct cell and show a tip; no timer.
+      
+      // Only add shield in endless mode
+      if (!tutorialMode && playMode !== "timed" && !shieldActive && Math.random() < 0.05) {
+        let candidateIndices = [];
+        for (let i = 0; i < board.children.length; i++) {
+          if (i !== currentOddIndex) candidateIndices.push(i);
+        }
+        if (candidateIndices.length > 0) {
+          let randomIndex = candidateIndices[Math.floor(Math.random() * candidateIndices.length)];
+          let shieldCell = board.children[randomIndex];
+          shieldCell.dataset.shield = "true";
+          shieldCell.innerHTML = "🛡️";
+          let shieldSize;
+          if (gridSize === 3) { shieldSize = "250%"; }
+          else if (gridSize === 4) { shieldSize = "200%"; }
+          else { shieldSize = "150%"; }
+          shieldCell.style.fontSize = shieldSize;
+          shieldCell.style.display = "flex";
+          shieldCell.style.justifyContent = "center";
+          shieldCell.style.alignItems = "center";
+        }
+      }
+      
+      // In timed mode, record the time the round started
+      if (playMode === "timed") {
+        roundStartTime = performance.now();
+      }
+      
       if (tutorialMode) {
         const oddCell = board.children[currentOddIndex];
         oddCell.style.border = "4px dashed #000";
         timerDisplay.textContent = "Tutorial: Tap the highlighted square!";
-      } else { startTimer(); }
+      } else if (playMode === "endless") {
+        startTimer();
+      }
     }
     
     // Show temporary error popup in tutorial mode
@@ -847,8 +962,61 @@
     
     function cellClicked(e) {
       if (!gameActive || paused) return;
-      cancelAnimationFrame(timerAnimationFrame);
-      const reactionTime = currentTimeLimit - timeLeft;
+      if (playMode === "endless") { cancelAnimationFrame(timerAnimationFrame); }
+      
+      if (e.target.dataset.shield === "true") {
+        shieldActive = true;
+        shieldIndicator.style.display = "block";
+        e.target.innerHTML = "";
+        e.target.style.fontSize = "";
+        e.target.style.display = "";
+        e.target.style.justifyContent = "";
+        e.target.style.alignItems = "";
+        e.target.style.backgroundColor = lastBaseColor;
+        delete e.target.dataset.shield;
+        if (navigator.vibrate) navigator.vibrate(50);
+        return;
+      }
+      
+      let reactionTime;
+      if (playMode === "timed") {
+        // In timed mode, reaction time is the difference between now and when the round started
+        reactionTime = performance.now() - roundStartTime;
+      } else {
+        reactionTime = currentTimeLimit - timeLeft;
+      }
+      
+      if (e.target.dataset.odd !== "true") {
+        if (tutorialMode) { showTutorialError(); return; }
+        if (playMode === "timed") {
+          e.target.removeEventListener('click', cellClicked);
+          let currentColor = window.getComputedStyle(e.target).backgroundColor;
+          function invertColor(rgbStr) {
+            let nums = rgbStr.match(/\d+/g);
+            if (!nums) return rgbStr;
+            let r = 255 - parseInt(nums[0]);
+            let g = 255 - parseInt(nums[1]);
+            let b = 255 - parseInt(nums[2]);
+            return `rgb(${r}, ${g}, ${b})`;
+          }
+          e.target.style.backgroundColor = invertColor(currentColor);
+          e.target.classList.add("locked");
+          wrongSound.play();
+          if (navigator.vibrate) navigator.vibrate(100);
+          return;
+        } else {
+          if (shieldActive) {
+            // shield logic remains
+          } else {
+            if (navigator.vibrate) navigator.vibrate(100);
+            e.target.classList.add('shake');
+            wrongSound.play();
+            setTimeout(() => { gameOver(); }, 500);
+            return;
+          }
+        }
+      }
+      
       if (e.target.dataset.odd === 'true') {
         if (navigator.vibrate) navigator.vibrate(50);
         const rect = e.target.getBoundingClientRect();
@@ -873,12 +1041,6 @@
           return;
         }
         createBoard();
-      } else {
-        if (tutorialMode) { showTutorialError(); return; }
-        if (navigator.vibrate) navigator.vibrate(100);
-        e.target.classList.add('shake');
-        wrongSound.play();
-        setTimeout(() => { gameOver(); }, 500);
       }
     }
     
@@ -901,6 +1063,12 @@
       currentCombo = 0; highestCombo = 0;
       scoreDisplay.textContent = 'Score: ' + score;
       gameOverOverlay.classList.add('hidden');
+      if (playMode === "timed") {
+        currentTimeLimit = timedTimeLimit;
+        timeLeft = currentTimeLimit;
+        timerEndTime = performance.now() + timeLeft;
+        timerAnimationFrame = requestAnimationFrame(updateTimedTimer);
+      }
       createBoard();
     }
     
@@ -925,7 +1093,7 @@ Shade Difference: ${shadeDesc}
 Max Combo: ${highestCombo}
 Average Reaction Time: ${avgReaction}
 Grid:
-${mosaic}Try it out at: http://jeffjeffersont.github.io`;
+${mosaic}Try it out at: http://OddColorOut.com`;
       
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(shareText).then(() => {
@@ -963,7 +1131,7 @@ ${mosaic}Try it out at: http://jeffjeffersont.github.io`;
       });
     }
     
-    // startGame resets tutorialMode so normal games start normally
+    // startGame resets tutorialMode so that normal games start normally
     function startGame() {
       tutorialMode = false;
       startMenu.classList.add('hidden');
@@ -971,6 +1139,13 @@ ${mosaic}Try it out at: http://jeffjeffersont.github.io`;
       currentCombo = 0; highestCombo = 0;
       score = 0; level = 1; roundsPlayed = 0;
       scoreDisplay.textContent = 'Score: ' + score;
+      if (playMode === "timed") {
+        currentTimeLimit = timedTimeLimit;
+        timeLeft = currentTimeLimit;
+        const startTime = performance.now();
+        timerEndTime = startTime + timeLeft;
+        timerAnimationFrame = requestAnimationFrame(updateTimedTimer);
+      }
       createBoard();
     }
     
@@ -986,7 +1161,7 @@ ${mosaic}Try it out at: http://jeffjeffersont.github.io`;
       updatePreview();
     }
     
-    // Tutorial mode: skip menu and start game in tutorial mode (no timer)
+    // Tutorial mode: skip menu and start a game in tutorial mode (no timer)
     function startTutorial() {
       tutorialMode = true;
       startMenu.classList.add('hidden');
@@ -1023,10 +1198,7 @@ ${mosaic}Try it out at: http://jeffjeffersont.github.io`;
       cellShapeRadios.forEach(radio => { radio.checked = (radio.value === cellShape); });
       customGridSizeInput.value = "";
     });
-    leaderboardBtn.addEventListener('click', () => {
-      updateLeaderboard();
-      leaderboardOverlay.classList.remove('hidden');
-    });
+    leaderboardBtn.addEventListener('click', () => { updateLeaderboard(); leaderboardOverlay.classList.remove('hidden'); });
     creditsBtn.addEventListener('click', () => { creditsOverlay.classList.remove('hidden'); });
     closeInstructionsBtn.addEventListener('click', () => { instructionsOverlay.classList.add('hidden'); });
     closeCreditsBtn.addEventListener('click', () => { creditsOverlay.classList.add('hidden'); });
