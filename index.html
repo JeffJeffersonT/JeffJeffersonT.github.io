@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"> 
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -130,7 +130,6 @@
       margin: 0 4px;
       transition: background 0.2s, color 0.2s;
     }
-    /* When selected, each button shows a distinct color */
     .small-button[data-time="15000"].selected {
       background: #ff5733;
       color: #fff;
@@ -147,10 +146,8 @@
       background: #2196f3;
       color: #fff;
     }
-    /* fixed buttons */
-    #menu-btn, #pause-btn { position: fixed; top: 10px; z-index: 20; }
-    #menu-btn { right: 10px; }
-    #pause-btn { right: 90px; }
+    /* fixed pause button (only visible during gameplay) */
+    #pause-btn { position: fixed; top: 10px; right: 10px; z-index: 20; }
     /* paused grid style: heavily blurred and darkened */
     #game-board.paused { filter: blur(5px) brightness(0.3) saturate(0.8); }
     /* start menu overlay */
@@ -166,8 +163,7 @@
       border-radius: 4px; background: #fff; color: #2196f3;
       cursor: pointer; transition: background 0.2s, color 0.2s;
     }
-    /* Default grid size is now 5x5 */
-    #grid-size-buttons button[data-size="5"] { background: #2196f3; color: #fff; }
+    #grid-size-buttons button.selected { background: #2196f3; color: #fff; }
     /* 2x3 grid for main menu buttons */
     #menu-buttons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
     /* preview grid */
@@ -247,7 +243,7 @@
   <audio id="shield-break-sound" preload="auto" src="https://www.soundjay.com/button/sounds/button-4.mp3"></audio>
   
   <h1>Odd Color Out</h1>
-  <small>v0.4</small>
+  <small>v0.6.2</small>
   <div id="byline">made by Jeff Jefferson &lt;3</div>
   <div id="score">Score: 0</div>
   <div id="timer">Time Left: 5.00s</div>
@@ -256,15 +252,18 @@
     <div id="timer-bar"></div>
   </div>
   
-  <!-- Shield indicator (shows below the grid when a shield is acquired) -->
+  <!-- Shield indicator -->
   <div id="shield-indicator" style="display:none; font-size:24px; margin:10px;">🛡️</div>
   
-  <!-- fixed menu and pause buttons -->
-  <button id="menu-btn" class="menu-button">Menu</button>
-  <button id="pause-btn" class="menu-button">Pause</button>
+  <!-- Top right button always labeled "Pause" -->
+  <button id="pause-btn" class="menu-button" style="display:none;">Pause</button>
+  
   <div id="game-board"></div>
   
-  <!-- game over overlay -->
+  <!-- Show Overlay Button (for Game Over) -->
+  <button id="show-overlay-btn" class="menu-button" style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); display: none;">Show Game Over</button>
+  
+  <!-- Game Over overlay -->
   <div id="game-over-overlay" class="overlay hidden">
     <div class="overlay-content">
       <h2>game over!</h2>
@@ -273,34 +272,36 @@
       <div class="overlay-buttons">
         <button id="restart-btn" class="menu-button">Restart</button>
         <button id="share-btn" class="menu-button">Share</button>
-        <button id="menu-btn-overlay" class="menu-button">Main Menu</button>
+        <button id="menu-btn-overlay" class="menu-button">Menu</button>
       </div>
+      <button id="hide-overlay-btn" class="menu-button">Hide Overlay</button>
     </div>
   </div>
   
-  <!-- pause overlay with heavy blur and darkened grid -->
+  <!-- Pause overlay -->
   <div id="pause-overlay" class="overlay hidden">
     <div class="overlay-content">
       <h2>paused</h2>
       <p id="pause-tip">Focus on the grid while it’s paused</p>
-      <button id="resume-btn" class="menu-button">resume</button>
+      <button id="resume-btn" class="menu-button">Resume</button>
+      <button id="pause-menu-btn" class="menu-button">Menu</button>
     </div>
   </div>
   
-  <!-- tutorial complete overlay -->
+  <!-- Tutorial complete overlay -->
   <div id="tutorial-complete-overlay" class="overlay hidden">
     <div class="overlay-content">
       <h2>tutorial complete!</h2>
       <p>Great job! Stay focused, tap quickly, and keep practicing.<br>
          Fun fact: Red grabs attention and blue calms the mind.</p>
       <div class="overlay-buttons">
-        <button id="replay-tutorial-btn" class="menu-button">replay tutorial</button>
-        <button id="back-menu-btn" class="menu-button">back to menu</button>
+        <button id="replay-tutorial-btn" class="menu-button">Replay Tutorial</button>
+        <button id="back-menu-btn" class="menu-button">Menu</button>
       </div>
     </div>
   </div>
   
-  <!-- start menu overlay (no tutorial button here) -->
+  <!-- Start menu overlay -->
   <div id="start-menu" class="overlay">
     <div class="overlay-content">
       <img id="logo" src="https://github.com/JeffJeffersonT/JeffJeffersonT.github.io/blob/main/OddColorOutLogo.png?raw=true" alt="logo" />
@@ -318,7 +319,7 @@
       </div>
       <div id="numpad-info"></div>
       <div id="preview-grid"></div>
-      <!-- Existing dancefloor toggle -->
+      <!-- Dancefloor toggle -->
       <div style="margin-bottom:10px; text-align: center;">
         <label class="switch">
           <input type="checkbox" id="dancefloor-switch">
@@ -326,7 +327,7 @@
         </label>
         <span id="dancefloor-label">dancefloor: off</span>
       </div>
-      <!-- New mode toggle: endless (left) / timed (right) -->
+      <!-- Mode toggle -->
       <div style="margin-bottom:10px; text-align: center;">
           <span style="margin-right: 8px;">endless</span>
           <label class="switch" style="vertical-align: middle;">
@@ -335,7 +336,7 @@
           </label>
           <span style="margin-left: 8px;">timed</span>
       </div>
-      <!-- Timed mode options as small buttons -->
+      <!-- Timed mode options -->
       <div id="timed-mode-options" style="display:none; text-align: center; margin-bottom:10px;">
           <button class="small-button" data-time="15000">15s</button>
           <button class="small-button selected" data-time="30000">30s</button>
@@ -354,7 +355,6 @@
     </div>
   </div>
   
-  <!-- instructions overlay (how to play) with tutorial button -->
   <div id="instructions-overlay" class="overlay hidden">
     <div class="overlay-content">
       <h2>how to play</h2>
@@ -369,7 +369,6 @@
     </div>
   </div>
   
-  <!-- credits overlay -->
   <div id="credits-overlay" class="overlay hidden">
     <div class="overlay-content">
       <h2>credits</h2>
@@ -384,7 +383,6 @@
     </div>
   </div>
   
-  <!-- options overlay -->
   <div id="options-overlay" class="overlay hidden">
     <div class="overlay-content">
       <h2>options</h2>
@@ -414,7 +412,6 @@
     </div>
   </div>
   
-  <!-- leaderboard overlay -->
   <div id="leaderboard-overlay" class="overlay hidden">
     <div class="overlay-content">
       <h2>leaderboard</h2>
@@ -423,7 +420,6 @@
     </div>
   </div>
   
-  <!-- screen fit help overlay -->
   <div id="screen-fit-overlay" class="overlay hidden">
     <div class="overlay-content">
       <h2>screen help</h2>
@@ -436,7 +432,8 @@
   <script>
     // Global state and helper variables
     let gridSize = 5; // Default grid size is 5x5
-    let roundStartTime = 0; // For timed mode reaction time calculation
+    let roundStartTime = 0; // For timed mode reaction time
+    let gameActive = false; // Tracks if a game is in progress
 
     const board = document.getElementById('game-board');
     const scoreDisplay = document.getElementById('score');
@@ -450,9 +447,7 @@
     const leaderboardOverlay = document.getElementById('leaderboard-overlay');
     const gridSizeButtons = document.querySelectorAll('#grid-size-buttons button');
     const previewGrid = document.getElementById('preview-grid');
-    const menuBtn = document.getElementById('menu-btn');
     const pauseBtn = document.getElementById('pause-btn');
-    const resumeBtn = document.getElementById('resume-btn');
     const startBtn = document.getElementById('start-btn');
     const howToBtn = document.getElementById('how-to-btn');
     const tutorialBtnHTP = document.getElementById('tutorial-btn-htp');
@@ -482,6 +477,9 @@
     const tutorialCompleteOverlay = document.getElementById('tutorial-complete-overlay');
     const shieldIndicator = document.getElementById('shield-indicator');
     const shieldBreakSound = document.getElementById('shield-break-sound');
+    const showOverlayBtn = document.getElementById('show-overlay-btn');
+    const pauseMenuBtn = document.getElementById('pause-menu-btn');
+    const menuBtnOverlay = document.getElementById('menu-btn-overlay');
     
     // Global variables for share info
     let lastBaseColor = "";
@@ -508,7 +506,7 @@
     // Default cell shape
     let cellShape = "square";
     
-    // Global variables for game mode (color modes) and play mode (endless/timed)
+    // Global variables for game mode and play mode
     let gameMode = "normal"; // normal, grayscale, colorblind
     let playMode = "endless"; // endless (default) or timed
     let currentTheme = "light"; // light, dark, vibrant
@@ -545,7 +543,6 @@
       "https://www.soundjay.com/phone/sounds/cell-phone-1-nr9.mp3"
     ];
     
-    // Audio elements
     const correctSound = document.getElementById('correct-sound');
     correctSound.volume = volumeSlider.value / 100;
     const wrongSound = document.getElementById('wrong-sound');
@@ -555,7 +552,6 @@
     let level = 1;
     let roundsPlayed = 0;
     
-    // Numpad mapping
     const numpadMapping = {
       "Numpad7": 0, "Numpad8": 1, "Numpad9": 2,
       "Numpad4": 3, "Numpad5": 4, "Numpad6": 5,
@@ -563,7 +559,6 @@
     };
     let numpadKeyDown = false;
     
-    // Get emoji for color string
     function getEmojiForColor(colorStr) {
       const nums = colorStr.match(/\d+/g);
       if (!nums || nums.length < 3) return "⬜";
@@ -578,7 +573,6 @@
       return "⬜";
     }
     
-    // Get qualitative shade description
     function getShadeDescription(diff) {
       if (diff >= 45) return "very low";
       else if (diff >= 40) return "low";
@@ -588,24 +582,20 @@
       else return diff;
     }
     
-    // Update volume based on slider
     volumeSlider.addEventListener('input', () => {
       correctSound.volume = volumeSlider.value / 100;
       wrongSound.volume = volumeSlider.value / 100;
       shieldBreakSound.volume = volumeSlider.value / 100;
     });
     
-    // Update cell gap based on slider
     cellGapSlider.addEventListener('input', () => {
       board.style.gap = cellGapSlider.value + "px";
     });
     
-    // Update cell shape from radio buttons
     cellShapeRadios.forEach(radio => {
       radio.addEventListener('change', () => { cellShape = radio.value; });
     });
     
-    // Theme buttons
     themeVibrantBtn.addEventListener('click', () => {
       currentTheme = "vibrant";
       themeVibrantBtn.classList.add('selected');
@@ -631,7 +621,6 @@
       document.body.style.color = "#eee";
     });
     
-    // Grid size buttons
     gridSizeButtons.forEach(button => {
       button.addEventListener('click', () => {
         gridSizeButtons.forEach(btn => btn.classList.remove('selected'));
@@ -642,14 +631,12 @@
       });
     });
     
-    // Toggle dancefloor mode
     dancefloorSwitch.addEventListener('change', () => {
       dancefloorOn = dancefloorSwitch.checked;
       dancefloorLabel.textContent = dancefloorOn ? 'dancefloor: on' : 'dancefloor: off';
       updatePreview();
     });
     
-    // New mode toggle: endless/timed
     const modeToggle = document.getElementById('mode-toggle');
     const timedModeOptions = document.getElementById('timed-mode-options');
     modeToggle.addEventListener('change', () => {
@@ -657,7 +644,7 @@
       timedModeOptions.style.display = playMode === "timed" ? "block" : "none";
     });
     const timedButtons = timedModeOptions.querySelectorAll('.small-button');
-    let timedTimeLimit = 30000; // default 30 seconds
+    let timedTimeLimit = 30000;
     timedButtons.forEach(btn => {
       btn.addEventListener('click', () => {
         timedButtons.forEach(b => b.classList.remove('selected'));
@@ -666,7 +653,6 @@
       });
     });
     
-    // Generate preview grid (always visible on load)
     function updatePreview() {
       if (dancefloorInterval) { clearInterval(dancefloorInterval); dancefloorInterval = null; }
       const customSize = parseInt(customGridSizeInput.value);
@@ -775,7 +761,15 @@
       else { timerDisplay.classList.remove('timer-warning'); }
     }
     
-    // Timer for endless mode (resets each round)
+    function updateEndlessTimer() {
+      if (paused) return;
+      const now = performance.now();
+      timeLeft = Math.max(0, timerEndTime - now);
+      updateTimerDisplay();
+      if (timeLeft <= 0) { gameOver(); }
+      else { timerAnimationFrame = requestAnimationFrame(updateEndlessTimer); }
+    }
+    
     function startTimer() {
       if (tutorialMode) return;
       if (paused) return;
@@ -784,20 +778,10 @@
                          score >= 6000 ? 3000 :
                          score >= 3000 ? 4000 : 5000;
       timeLeft = currentTimeLimit;
-      const startTime = performance.now();
-      timerEndTime = startTime + timeLeft;
-      function updateTimer() {
-        if (paused) return;
-        const now = performance.now();
-        timeLeft = Math.max(0, timerEndTime - now);
-        updateTimerDisplay();
-        if (timeLeft <= 0) { gameOver(); }
-        else { timerAnimationFrame = requestAnimationFrame(updateTimer); }
-      }
-      timerAnimationFrame = requestAnimationFrame(updateTimer);
+      timerEndTime = performance.now() + timeLeft;
+      timerAnimationFrame = requestAnimationFrame(updateEndlessTimer);
     }
     
-    // Timer for timed mode (single countdown for entire game)
     function updateTimedTimer() {
       if (paused) return;
       const now = performance.now();
@@ -811,9 +795,14 @@
       paused = true;
       cancelAnimationFrame(timerAnimationFrame);
       pausedTimeLeft = timeLeft;
-      pauseBtn.textContent = "Resume";
+      // Top-right button always remains "Pause"
+      pauseBtn.textContent = "Pause";
       board.classList.add("paused");
       board.style.pointerEvents = "none";
+      // Set all grid squares to black
+      for (const cell of board.children) {
+        cell.style.backgroundColor = "black";
+      }
       const tip = pauseTips[Math.floor(Math.random() * pauseTips.length)];
       pauseTip.textContent = tip;
       pauseOverlay.classList.remove("hidden");
@@ -821,13 +810,19 @@
     
     function resumeTimer() {
       paused = false;
-      timeLeft = pausedTimeLeft;
       pauseBtn.textContent = "Pause";
       board.classList.remove("paused");
       board.style.pointerEvents = "auto";
+      // Restore each cell's original color (saved in dataset.originalColor)
+      for (const cell of board.children) {
+        if (cell.dataset.originalColor) {
+          cell.style.backgroundColor = cell.dataset.originalColor;
+        }
+      }
       pauseOverlay.classList.add("hidden");
       if (playMode === "endless") {
-        startTimer();
+        timerEndTime = performance.now() + timeLeft;
+        timerAnimationFrame = requestAnimationFrame(updateEndlessTimer);
       } else if (playMode === "timed") {
         timerEndTime = performance.now() + timeLeft;
         timerAnimationFrame = requestAnimationFrame(updateTimedTimer);
@@ -839,9 +834,17 @@
       if (!paused) { pauseTimer(); } else { resumeTimer(); }
     });
     
-    resumeBtn.addEventListener('click', resumeTimer);
+    document.getElementById('resume-btn').addEventListener('click', resumeTimer);
     
-    // Particle effect on correct tap
+    pauseMenuBtn.addEventListener('click', () => {
+      pauseOverlay.classList.add('hidden');
+      board.classList.remove("paused");
+      board.style.pointerEvents = "auto";
+      goToMenu();
+    });
+    
+    menuBtnOverlay.addEventListener('click', () => { goToMenu(); });
+    
     function triggerParticles(x, y) {
       const particleCount = 20;
       for (let i = 0; i < particleCount; i++) {
@@ -858,7 +861,6 @@
       }
     }
     
-    // Create board with optional shield powerup (shield only added in endless mode)
     function createBoard() {
       board.innerHTML = '';
       gameActive = true;
@@ -896,18 +898,18 @@
       let oddIndex = Math.floor(Math.random() * (gridSize * gridSize));
       currentOddIndex = oddIndex;
       
-      // Create grid cells
       for (let i = 0; i < gridSize * gridSize; i++) {
         const cell = document.createElement('div');
         cell.classList.add('cell');
         cell.style.borderRadius = (cellShape === "circle") ? "50%" : "8px";
         cell.style.backgroundColor = (i === oddIndex) ? oddColorString : baseColorString;
+        // Save original color for resume
+        cell.dataset.originalColor = cell.style.backgroundColor;
         if (i === oddIndex) cell.dataset.odd = 'true';
         cell.addEventListener('click', cellClicked);
         board.appendChild(cell);
       }
       
-      // Only add shield in endless mode
       if (!tutorialMode && playMode !== "timed" && !shieldActive && Math.random() < 0.05) {
         let candidateIndices = [];
         for (let i = 0; i < board.children.length; i++) {
@@ -929,7 +931,6 @@
         }
       }
       
-      // In timed mode, record the time the round started
       if (playMode === "timed") {
         roundStartTime = performance.now();
       }
@@ -943,7 +944,6 @@
       }
     }
     
-    // Show temporary error popup in tutorial mode
     function showTutorialError() {
       const errorPopup = document.createElement('div');
       errorPopup.style.position = "absolute";
@@ -980,7 +980,6 @@
       
       let reactionTime;
       if (playMode === "timed") {
-        // In timed mode, reaction time is the difference between now and when the round started
         reactionTime = performance.now() - roundStartTime;
       } else {
         reactionTime = currentTimeLimit - timeLeft;
@@ -1006,7 +1005,16 @@
           return;
         } else {
           if (shieldActive) {
-            // shield logic remains
+            shieldActive = false;
+            shieldIndicator.style.display = "none";
+            if (navigator.vibrate) navigator.vibrate(100);
+            shieldBreakSound.play();
+            const rect = e.target.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            triggerParticles(x, y);
+            createBoard();
+            return;
           } else {
             if (navigator.vibrate) navigator.vibrate(100);
             e.target.classList.add('shake');
@@ -1055,6 +1063,8 @@
         "Max Combo: " + highestCombo + " | Average Reaction Time: " + avgReaction;
       updateLeaderboard();
       gameOverOverlay.classList.remove('hidden');
+      showOverlayBtn.style.display = 'none';
+      pauseBtn.style.display = 'none';
     }
     
     function restartGame() {
@@ -1070,9 +1080,19 @@
         timerAnimationFrame = requestAnimationFrame(updateTimedTimer);
       }
       createBoard();
+      showOverlayBtn.style.display = 'none';
+      pauseBtn.style.display = 'block';
     }
     
+    // UPDATED shareGame() function:
+    // If playMode is endless, it adds "Mode: Endless"; if timed, it adds "Mode: Timed (X s)"
     function shareGame() {
+      let playModeText = "";
+      if (playMode === "endless") {
+        playModeText = "Mode: Endless";
+      } else if (playMode === "timed") {
+        playModeText = "Mode: Timed (" + (timedTimeLimit / 1000) + "s)";
+      }
       const baseEmoji = getEmojiForColor(lastBaseColor);
       const oddEmoji = getEmojiForColor(lastOddColor);
       let mosaic = "";
@@ -1083,17 +1103,16 @@
         }
         mosaic += "\n";
       }
-      const modeText = gameMode.charAt(0).toUpperCase() + gameMode.slice(1);
       const shadeDesc = getShadeDescription(lastDiff);
       let avgReaction = successfulClicks ? (totalReactionTime / successfulClicks).toFixed(0) + " ms" : "N/A";
       const shareText = `I scored ${score} points in Odd Color Out!
-Mode: ${modeText}
+${playModeText}
 Grid Size: ${gridSize} x ${gridSize}
 Shade Difference: ${shadeDesc}
 Max Combo: ${highestCombo}
 Average Reaction Time: ${avgReaction}
 Grid:
-${mosaic}Try it out at: http://OddColorOut.com`;
+${mosaic}Try it out at: https://OddColorOut.com`;
       
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(shareText).then(() => {
@@ -1131,7 +1150,6 @@ ${mosaic}Try it out at: http://OddColorOut.com`;
       });
     }
     
-    // startGame resets tutorialMode so that normal games start normally
     function startGame() {
       tutorialMode = false;
       startMenu.classList.add('hidden');
@@ -1147,6 +1165,9 @@ ${mosaic}Try it out at: http://OddColorOut.com`;
         timerAnimationFrame = requestAnimationFrame(updateTimedTimer);
       }
       createBoard();
+      showOverlayBtn.style.display = 'none';
+      pauseBtn.style.display = 'block';
+      gameActive = true;
     }
     
     function goToMenu() {
@@ -1159,17 +1180,25 @@ ${mosaic}Try it out at: http://OddColorOut.com`;
       gameOverOverlay.classList.add('hidden');
       startMenu.classList.remove('hidden');
       updatePreview();
+      showOverlayBtn.style.display = 'none';
+      pauseBtn.style.display = 'none';
+      board.classList.remove("paused");
+      board.style.pointerEvents = "auto";
+      pauseOverlay.classList.add('hidden');
+      paused = false;
+      gameActive = false;
     }
     
-    // Tutorial mode: skip menu and start a game in tutorial mode (no timer)
     function startTutorial() {
       tutorialMode = true;
       startMenu.classList.add('hidden');
       timerDisplay.textContent = "";
       createBoard();
+      showOverlayBtn.style.display = 'none';
+      pauseBtn.style.display = 'block';
+      gameActive = true;
     }
     
-    // Numpad events for 3x3 grid
     document.addEventListener('keydown', (e) => {
       if (gameActive && gridSize === 3 && !numpadKeyDown) {
         if (numpadMapping[e.code] !== undefined) {
@@ -1185,7 +1214,6 @@ ${mosaic}Try it out at: http://OddColorOut.com`;
       }
     });
     
-    // Overlay event listeners
     startBtn.addEventListener('click', startGame);
     document.getElementById('restart-btn').addEventListener('click', restartGame);
     document.getElementById('share-btn').addEventListener('click', shareGame);
@@ -1212,23 +1240,29 @@ ${mosaic}Try it out at: http://OddColorOut.com`;
       updatePreview();
     });
     document.getElementById('close-leaderboard-btn').addEventListener('click', () => { leaderboardOverlay.classList.add('hidden'); });
-    menuBtn.addEventListener('click', goToMenu);
-    document.getElementById('menu-btn-overlay').addEventListener('click', goToMenu);
     screenFitText.addEventListener('click', () => { screenFitOverlay.classList.remove('hidden'); });
     closeScreenFitBtn.addEventListener('click', () => { screenFitOverlay.classList.add('hidden'); });
     
-    // Tutorial complete overlay buttons
+    document.getElementById('hide-overlay-btn').addEventListener('click', () => {
+      gameOverOverlay.classList.add('hidden');
+      showOverlayBtn.style.display = 'block';
+    });
+    showOverlayBtn.addEventListener('click', () => {
+      gameOverOverlay.classList.remove('hidden');
+      showOverlayBtn.style.display = 'none';
+    });
+    
+    menuBtnOverlay.addEventListener('click', () => { goToMenu(); });
+    document.getElementById('back-menu-btn').addEventListener('click', () => { 
+      tutorialCompleteOverlay.classList.add('hidden');
+      goToMenu(); 
+    });
     document.getElementById('replay-tutorial-btn').addEventListener('click', () => {
       tutorialCompleteOverlay.classList.add('hidden');
       tutorialMode = true;
       startGame();
     });
-    document.getElementById('back-menu-btn').addEventListener('click', () => {
-      tutorialCompleteOverlay.classList.add('hidden');
-      goToMenu();
-    });
     
-    // Initialize preview on page load
     updatePreview();
   </script>
 </body>
